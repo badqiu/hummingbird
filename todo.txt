@@ -1,0 +1,50 @@
+# 1. 数据交换框架
+
+# 2. 排重框架
+# 3. 排重算法
+# 4. 支持 join数据
+# 5. 有状态的 DistinctCount,状态key为 group by key + distinct column_name
+# 6. hsqldb替换 h2数据库,因为h2性能测试不行
+7. is_new() 方法实现,用于判断新用户,而不是不同维度交叉
+# 10. 支持将结果插入数据库
+11. 支持将结果插入mq
+# 12. 支持redis, mysql 插入出错重试机制
+13. 与spring集成,或者是 globalContext集成
+# 14. sql 支持函数
+支持 property get函数,collect_map() 聚集函数
+# 支持 没有group by的 select
+#支持子查询
+支持增加自定义聚集函数,函数
+优化 bloomfilter 及hll count_distinct()的性能,使用批量接口
+进行性能测试
+#支持select *
+删除Profiler相关代码
+实现union,union all
+#where条件的 =号,or and有大小写问题, 替换=号时,要注意!=
+
+实现insert语句
+实现delete语句
+实现update语句
+实现truncate
+实现select语句where创建索引
+实现jdbc driver
+
+直接实现 bloomfilter() 聚集函数
+bloomfilter实现
+
+数据库支持设置属性;
+数据库支持上下文
+sql支持命名参数
+实现jdbc driver
+SQL特性
+	case when
+	between
+	union,union all
+
+
+
+数据自定义配置
+#	com.duowan.hummingbird.db.sql.select.SelectItem : 自定义聚集函数
+#		bloomfilter 及 hypperloglog抽象层
+#	com.duowan.hummingbird.util.MVELUtil : 自定义函数
+

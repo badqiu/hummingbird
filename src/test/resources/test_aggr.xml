@@ -1,0 +1,44 @@
+
+
+
+<sqls>
+	
+	<!-- 
+		实现s
+	 -->
+	<sql id="1" where="game != 'as'  and dur > 500" groupBy="stime,game" partitionBy="" intoRedis="">
+		<select>
+			<aggr method="sum" expr="dur" alias="sum_dur_alias"/>
+			<aggr method="count" expr="passport" />
+			<aggr method="countDistinct" expr="passport" />
+		</select>
+	</sql>
+	
+	<sql id="2">
+		<select>
+			<aggr method="sum" column=""/>
+			<aggr method="count" column=""/>
+			<aggr method="countDistinct" column=""/>
+		</select>
+		<where>length(game) > 10</where>
+		<groupBy>game,game_server</groupBy>
+		<partitionBy>stime</partitionBy>
+		<intoRedis>redis.set(game +'/'+ game_server + 'dur', dur)</intoRedis>
+	</sql>
+	
+	<sql id="3">
+		<query>
+			select count(username),sum(dur) sum_duration,count_distinct(username) from t
+			where game != 'ddt'
+			group by game,server
+		</query>
+		<intoRedis>redis.incr(game +'/'+ game_server + 'dur', sum_duration)</intoRedis>
+		<intoDb>
+			insert into st_game_hour(game,game_server,cnt,dur,idcnt) 
+			values (:game,:game_server:count_username,:sum_dur,:count_distinct_username)
+		</intoDb>
+	</sql>
+	
+<!-- 		<partitionBy>stime</partitionBy> -->
+	
+</sqls>
