@@ -16,10 +16,10 @@ public abstract class BaseCountDistinct extends BaseAggrFunction implements Aggr
 		}
 		
 		Collection<Object> localDistinctedValues = (Collection<Object>) new HashSet(values);
-		return distinctByHistory(groupBy,localDistinctedValues); 
+		return distinctByHistory(groupBy,localDistinctedValues,params); 
 	}
 	
 	//sum,count,avg,min,max,count_distinct
-	public abstract int distinctByHistory(List groupBy,Collection localDistinctedValues);
+	public abstract int distinctByHistory(List groupBy,Collection localDistinctedValues,Object[] params);
 	
 }

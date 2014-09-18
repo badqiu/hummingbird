@@ -12,13 +12,13 @@ import org.springframework.util.ObjectUtils;
 import com.duowan.hummingbird.db.sql.select.AggrFunctionRegister;
 import com.duowan.hummingbird.db.sql.select.SelectSql.GroupByValue;
 import com.duowan.hummingbird.util.StringUtil;
-import com.duowan.realtime.computing.HyperLogLogPlusClient;
 import com.duowan.realtime.thirft.api.HyperLogLogPlusQuery;
+import com.duowan.realtime.thirft.api.HyperLogLogQuery;
 
 public class HyperLogLogCountDistinct extends BaseCountDistinct{
 
 	@Override
-	public int distinctByHistory(List groupBy, Collection localDistinctedValues) {
+	public int distinctByHistory(List groupBy,Collection localDistinctedValues,Object[] params) {
 //		return hyperLogLogByHistory(groupBy,localDistinctedValues);
 		throw new RuntimeException("not yet implement");
 	}
@@ -37,28 +37,24 @@ public class HyperLogLogCountDistinct extends BaseCountDistinct{
 		}
 		String hllpGroup = (String)params[0];
 		try {
-			List<HyperLogLogPlusQuery> queryList = toHyperLogLogPlusQueryList(map);
-			Map<String,Integer> resultMap = AggrFunctionRegister.getInstance().getCountDistinctProvider().offerForCardinalityIncrement(hllpGroup, queryList);
+			List<HyperLogLogQuery> queryList = toHyperLogLogPlusQueryList(map);
+			Map<String,Integer> resultMap = AggrFunctionRegister.getInstance().getCountDistinctProvider().offerForCardinality(hllpGroup, queryList);
 			return BloomFilterCountDistinct.mapping2Result(map, resultMap);
 		}catch(Exception e) {
-			throw new RuntimeException("offerForCardinalityIncrement error",e);
+			throw new RuntimeException("offerForCardinality exec error",e);
 		}
 	}
 
-	private List<HyperLogLogPlusQuery> toHyperLogLogPlusQueryList(Map<GroupByValue, List<Object>> map) {
-		List<HyperLogLogPlusQuery> result = new ArrayList<HyperLogLogPlusQuery>(map.size());
+	private List<HyperLogLogQuery> toHyperLogLogPlusQueryList(Map<GroupByValue, List<Object>> map) {
+		List<HyperLogLogQuery> result = new ArrayList<HyperLogLogQuery>(map.size());
 		for(Map.Entry<GroupByValue, List<Object>> entry : map.entrySet()) {
 			GroupByValue key = entry.getKey();
 			List<Object> values = entry.getValue();
 			String group = StringUtils.join(key.list,"/");
 			List<String> stringValues = new ArrayList(new HashSet(StringUtil.getNotNullStringValues(values)));
-			result.add(new HyperLogLogPlusQuery(group,stringValues));
+			result.add(new HyperLogLogQuery(group,stringValues));
 		}
 		return result;
 	}
 
-	private HyperLogLogPlusClient getHyperLogLogPlusClient() {
-		HyperLogLogPlusClient hc = new HyperLogLogPlusClient();
-		return hc;
-	}
 }

@@ -28,8 +28,8 @@ public class AggrFunctionRegister {
 	
 	private  Map<String, AggrFunction> aggrFunctionMap = new HashMap();
 	{
-		aggrFunctionMap.put("hll_count_distinct", new HyperLogLogCountDistinct());
-		aggrFunctionMap.put("count_distinct", new BloomFilterCountDistinct());
+		aggrFunctionMap.put("hyper_log_log", new HyperLogLogCountDistinct());
+		aggrFunctionMap.put("bf_count_distinct", new BloomFilterCountDistinct());
 		aggrFunctionMap.put("count", new Count());
 		aggrFunctionMap.put("sum", new Sum());
 		aggrFunctionMap.put("min", new Min());

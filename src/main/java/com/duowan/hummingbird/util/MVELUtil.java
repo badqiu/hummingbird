@@ -3,16 +3,11 @@ package com.duowan.hummingbird.util;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.mvel2.MVEL;
-import org.mvel2.integration.VariableResolverFactory;
-import org.mvel2.integration.impl.CachingMapVariableResolverFactory;
 import org.mvel2.util.ParseTools;
 
 import com.duowan.common.util.DateConvertUtils;
@@ -54,10 +49,24 @@ public class MVELUtil {
 		return MVEL.executeExpression(compiledExpression,withMethodMap(vars));
 	}
 
-	private static VariableResolverFactory withMethodMap(Map vars) {
-		CachingMapVariableResolverFactory map = new CachingMapVariableResolverFactory(vars);
-		map.setNextFactory(new CachingMapVariableResolverFactory(methods));
-		return map;
+	private static Map withMethodMap(Map vars) {
+//		CachingMapVariableResolverFactory map = new CachingMapVariableResolverFactory(new HashMap(vars){
+//			@Override
+//			public boolean containsKey(Object key) {
+//				return true;
+//			}
+//		});
+//		map.setNextFactory(new CachingMapVariableResolverFactory(methods));
+//		return map;
+		Map result = new HashMap(){
+			@Override
+			public boolean containsKey(Object key) {
+				return true;
+			}
+		};
+		result.putAll(methods);
+		result.putAll(vars);
+		return result;
 	}
 	
 	public static Map<String,Method> getPublicStaticMethods(Class clazz) {
@@ -84,6 +93,11 @@ public class MVELUtil {
 
 	public static void registerFunctions(Map<String, Method> map) {
 		methods.putAll(map);
+	}
+
+	public static <T> T executeExpression(Serializable expr, Map vars,
+			Class<T> clazz) {
+		return (T)MVEL.executeExpression(expr,withMethodMap(vars),clazz);
 	}
 
 }

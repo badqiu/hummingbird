@@ -6,15 +6,15 @@ import java.util.Map;
 import org.apache.thrift.TException;
 
 import com.duowan.realtime.computing.BloomFilterClient;
-import com.duowan.realtime.computing.HyperLogLogPlusClient;
+import com.duowan.realtime.computing.HyperLogLogClient;
 import com.duowan.realtime.thirft.api.BloomFilterException;
 import com.duowan.realtime.thirft.api.BloomFilterGroupQuery;
 import com.duowan.realtime.thirft.api.HyperLogLogPlusException;
-import com.duowan.realtime.thirft.api.HyperLogLogPlusQuery;
+import com.duowan.realtime.thirft.api.HyperLogLogQuery;
 
 public class CountDistinctProviderImpl implements CountDistinctProvider {
 
-	private HyperLogLogPlusClient hyperLogLogPlusClient;
+	private HyperLogLogClient hyperLogLogClient;
 	private BloomFilterClient bloomFilterClient;
 	
 	@Override
@@ -30,9 +30,9 @@ public class CountDistinctProviderImpl implements CountDistinctProvider {
 	}
 
 	@Override
-	public Map<String,Integer> offerForCardinalityIncrement(String group,List<HyperLogLogPlusQuery> querys) {
+	public Map<String,Integer> offerForCardinality(String group,List<HyperLogLogQuery> querys) {
 		try {
-			return hyperLogLogPlusClient.offerForCardinalityIncrement(group, querys);
+			return hyperLogLogClient.offerForCardinality(group, querys);
 		} catch (HyperLogLogPlusException e) {
 			throw new RuntimeException("offerForCardinalityIncrement() error",e);
 		} catch (TException e) {
@@ -40,12 +40,14 @@ public class CountDistinctProviderImpl implements CountDistinctProvider {
 		}
 	}
 
-	public void setHyperLogLogPlusClient(HyperLogLogPlusClient hyperLogLogPlusClient) {
-		this.hyperLogLogPlusClient = hyperLogLogPlusClient;
-	}
-
 	public void setBloomFilterClient(BloomFilterClient bloomFilterClient) {
 		this.bloomFilterClient = bloomFilterClient;
 	}
+
+	public void setHyperLogLogClient(HyperLogLogClient hyperLogLogClient) {
+		this.hyperLogLogClient = hyperLogLogClient;
+	}
+	
+	
 
 }

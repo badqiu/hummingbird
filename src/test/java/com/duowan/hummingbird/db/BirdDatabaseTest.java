@@ -22,7 +22,7 @@ import com.duowan.common.util.DateConvertUtils;
 import com.duowan.hummingbird.TestData;
 import com.duowan.hummingbird.db.aggr.CountDistinctProviderImpl;
 import com.duowan.realtime.computing.BloomFilterClient;
-import com.duowan.realtime.computing.HyperLogLogPlusClient;
+import com.duowan.realtime.computing.HyperLogLogClient;
 
 public class BirdDatabaseTest {
 
@@ -32,7 +32,7 @@ public class BirdDatabaseTest {
 	public void before() throws Exception {
 		CountDistinctProviderImpl provider = new CountDistinctProviderImpl();
 		provider.setBloomFilterClient(new BloomFilterClient());
-		provider.setHyperLogLogPlusClient(new HyperLogLogPlusClient());
+		provider.setHyperLogLogClient(new HyperLogLogClient());
 		BirdDatabase.setCountDistinctProvider(provider);
 		
 		db.insert("user", Arrays.asList(TestData.getTestDatas(10)));
@@ -41,7 +41,7 @@ public class BirdDatabaseTest {
 	
 	@Test
 	public void test() throws Exception {
-		printRows(db.select("select game,game_server,count(dur),sum(dur),count_distinct(passport),hll_count_distinct(passport) from user where game != 'as' group by game,game_server"));
+		printRows(db.select("select game,game_server,count(dur),sum(dur),count_distinct(passport,'day'),hll_count_distinct(passport,'day') from user where game != 'as' group by game,game_server"));
 		printRows(db.select("select count(dur),sum(dur),count_distinct(passport),hll_count_distinct(passport) from user where game != 'as' group by game,game_server"));
 		printRows(db.select("select diy_key,extract(stime,'yyyyMMdd') as tdate,game,game_server,count(dur),sum(dur),count_distinct(passport) from user u join dim_user du on u.game = du.game where game != 'as' group by diy_key,extract(stime,'yyyyMMdd'),game,game_server having game = 'hz' "));
 		printRows(db.select("select id,diy_key,extract(stime,'yyyyMMdd') as tdate,game,game_server,dur,passport from user u join dim_user du on u.game = du.game where game != 'as' limit 0,2"));
@@ -106,6 +106,24 @@ public class BirdDatabaseTest {
 		assertContains(rows,"ext.ext_num",1,2,3,4);
 		assertContains(rows,"ext.ext_key","ext_value_0","ext_value_2","ext_value_1");
 		assertEquals(rows.size(),5);
+		
+	}
+	
+	@Test
+	public void is_not_null() throws Exception {
+		List<Map> rows = db.select("select ext.ext_key,sum(ext.ext_num) from user where (ext.abc != null and ext.abc='123') group by ext.ext_key");
+		printRows(rows);
+	}
+	
+	@Test
+	public void not_exist_column() throws Exception {
+		List<Map> rows = db.select("select ext.ext_key,sum(ext.ext_num) from user where not_exist_column = null group by ext.ext_key");
+		printRows(rows);
+		assertEquals(rows.size(),3);
+		
+		rows = db.select("select ext.ext_key,sum(ext.ext_num) from user where not_exist_column = 1 group by ext.ext_key");
+		printRows(rows);
+		assertEquals(rows.size(),0);
 		
 	}
 	
@@ -209,6 +227,7 @@ public class BirdDatabaseTest {
 			assertTrue(e.getMessage(),e.getMessage().equals("not found table by:not_exist_user as null"));
 		}
 	}
+	
 
     @Test
     public void testRefference() throws Exception{

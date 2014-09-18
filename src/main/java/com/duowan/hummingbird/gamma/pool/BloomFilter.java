@@ -43,6 +43,7 @@ public class BloomFilter<E> implements Serializable {
         digestFunction = tmp;
     }
 
+    private boolean changed = false;
     /**
       * Constructs an empty Bloom filter. The total length of the Bloom filter will be
       * c*n.
@@ -288,6 +289,7 @@ public class BloomFilter<E> implements Serializable {
      * @param bytes array of bytes to add to the Bloom filter.
      */
     public void add(byte[] bytes) {
+       changed = true;
        int[] hashes = createHashes(bytes, k);
        for (int hash : hashes)
            bitset.set(Math.abs(hash % bitSetSize), true);
@@ -362,6 +364,7 @@ public class BloomFilter<E> implements Serializable {
      * @param value If true, the bit is set. If false, the bit is cleared.
      */
     public void setBit(int bit, boolean value) {
+    	changed = true;
         bitset.set(bit, value);
     }
 
@@ -422,6 +425,15 @@ public class BloomFilter<E> implements Serializable {
     public double getBitsPerElement() {
         return this.bitSetSize / (double)numberOfAddedElements;
     }
+    
+    public void cleanChange() {
+    	changed = false;
+    }
+    
+    public boolean isChange() {
+    	return changed;
+    }
+    
 
 	public int notContainsCountAndAdd(String group, Collection<Object> values) {
 		int count = 0;

@@ -9,33 +9,36 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.thrift.TException;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 import com.duowan.common.util.DateConvertUtils;
 import com.duowan.hummingbird.db.sql.select.AggrFunctionRegister;
 import com.duowan.hummingbird.db.sql.select.SelectSql.GroupByValue;
 import com.duowan.hummingbird.gamma.pool.BloomFilter;
-import com.duowan.hummingbird.gamma.pool.BloomFilterPool;
+import com.duowan.hummingbird.gamma.pool.BloomFilterDB;
 import com.duowan.hummingbird.util.StringUtil;
-import com.duowan.realtime.computing.BloomFilterClient;
 import com.duowan.realtime.thirft.api.BloomFilterGroupQuery;
 
 public class BloomFilterCountDistinct extends BaseCountDistinct{
 
+	private BloomFilterDB db = new BloomFilterDB("/data2/abc");
+	
 	public BloomFilterCountDistinct() {
 	}
 	
-	//sum,count,avg,min,max,count_distinct
-	public int distinctByHistory(List groupBy,Collection localDistinctedValues) {
-		return bloomFilterDistinctByHistory(groupBy,localDistinctedValues);
-	}
-	
-	private int bloomFilterDistinctByHistory(List groupBy,Collection<Object> localDistinctedColumns) {
+	public int distinctByHistory(List groupBy,Collection localDistinctedValues,Object[] params) {
+		Assert.notEmpty(params,"bloomFilterName must be not empty");
+		String bloomFilterName = (String)params[0];
+		Assert.hasText(bloomFilterName,"bloomFilterName must be not empty");
+		
 		String group = StringUtils.join(groupBy,"/");
+		
 		Date groupDateValue = findDateValue(groupBy);
-		BloomFilter bf = BloomFilterPool.getBloomFilter(group);
-		return bf.notContainsCountAndAdd(group,localDistinctedColumns);
+		String partition = "" + new DateConvertUtils().format(groupDateValue, "yyyyMMdd");
+		
+		BloomFilter bf = db.get(bloomFilterName, partition);
+		return bf.notContainsCountAndAdd(group,localDistinctedValues);
 	}
 
 	private static Date findDateValue(List groupBy) {

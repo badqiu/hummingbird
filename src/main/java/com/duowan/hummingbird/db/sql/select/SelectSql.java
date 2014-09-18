@@ -244,7 +244,7 @@ public class SelectSql {
 		String replacedWhere = MVELUtil.sqlWhere2MVELExpression(where);
 		Serializable expr = MVELUtil.getMVELCompileExpression(replacedWhere);
 		for(Map row : rows) {
-			Boolean r = MVEL.executeExpression(expr, row,Boolean.class);
+			Boolean r = MVELUtil.executeExpression(expr, row,Boolean.class);
 			if(r) {
 				result.add(row);
 			}
