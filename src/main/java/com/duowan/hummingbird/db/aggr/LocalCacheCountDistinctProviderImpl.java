@@ -26,9 +26,8 @@ public class LocalCacheCountDistinctProviderImpl implements CountDistinctProvide
 		return proxy.bloomFilterNotContainsCountAndAdd(group, querys);
 	}
 
-	public Map<String, Integer> offerForCardinality(String group,
-			List<HyperLogLogQuery> query) {
-		return proxy.offerForCardinality(group, query);
+	public void offer(String group,List<HyperLogLogQuery> query) {
+		proxy.offer(group, query);
 	}
 
 

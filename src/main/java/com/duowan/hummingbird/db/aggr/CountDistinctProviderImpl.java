@@ -30,9 +30,9 @@ public class CountDistinctProviderImpl implements CountDistinctProvider {
 	}
 
 	@Override
-	public Map<String,Integer> offerForCardinality(String group,List<HyperLogLogQuery> querys) {
+	public void offer(String group,List<HyperLogLogQuery> querys) {
 		try {
-			return hyperLogLogClient.offerForCardinality(group, querys);
+			hyperLogLogClient.offer(group, querys);
 		} catch (HyperLogLogPlusException e) {
 			throw new RuntimeException("offerForCardinalityIncrement() error",e);
 		} catch (TException e) {

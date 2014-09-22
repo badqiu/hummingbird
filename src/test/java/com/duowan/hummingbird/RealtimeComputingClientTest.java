@@ -33,7 +33,6 @@ public class RealtimeComputingClientTest {
 		e.setGroup("blogjava");
 		e.setValues(Arrays.asList("1","2","3","4","5","6","7","8","9","0","1"));
 		hllpQueryList.add(e);
-		Map<String,Integer> map = hc.offerForCardinality("day", hllpQueryList );
-		System.out.println(map);
+		hc.offer("day", hllpQueryList );
 	}
 }

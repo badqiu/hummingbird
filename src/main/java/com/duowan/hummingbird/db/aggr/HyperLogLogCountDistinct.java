@@ -2,6 +2,7 @@ package com.duowan.hummingbird.db.aggr;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,6 @@ import org.springframework.util.ObjectUtils;
 import com.duowan.hummingbird.db.sql.select.AggrFunctionRegister;
 import com.duowan.hummingbird.db.sql.select.SelectSql.GroupByValue;
 import com.duowan.hummingbird.util.StringUtil;
-import com.duowan.realtime.thirft.api.HyperLogLogPlusQuery;
 import com.duowan.realtime.thirft.api.HyperLogLogQuery;
 
 public class HyperLogLogCountDistinct extends BaseCountDistinct{
@@ -38,8 +38,9 @@ public class HyperLogLogCountDistinct extends BaseCountDistinct{
 		String hllpGroup = (String)params[0];
 		try {
 			List<HyperLogLogQuery> queryList = toHyperLogLogPlusQueryList(map);
-			Map<String,Integer> resultMap = AggrFunctionRegister.getInstance().getCountDistinctProvider().offerForCardinality(hllpGroup, queryList);
-			return BloomFilterCountDistinct.mapping2Result(map, resultMap);
+			AggrFunctionRegister.getInstance().getCountDistinctProvider().offer(hllpGroup, queryList);
+//			return BloomFilterCountDistinct.mapping2Result(map, resultMap);
+			return new HashMap();
 		}catch(Exception e) {
 			throw new RuntimeException("offerForCardinality exec error",e);
 		}

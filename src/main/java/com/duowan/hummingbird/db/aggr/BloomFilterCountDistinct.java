@@ -15,9 +15,9 @@ import org.springframework.util.ObjectUtils;
 import com.duowan.common.util.DateConvertUtils;
 import com.duowan.hummingbird.db.sql.select.AggrFunctionRegister;
 import com.duowan.hummingbird.db.sql.select.SelectSql.GroupByValue;
-import com.duowan.hummingbird.gamma.pool.BloomFilter;
-import com.duowan.hummingbird.gamma.pool.BloomFilterDB;
 import com.duowan.hummingbird.util.StringUtil;
+import com.duowan.hummingbird.util.bloomfilter.BloomFilter;
+import com.duowan.hummingbird.util.bloomfilter.BloomFilterDB;
 import com.duowan.realtime.thirft.api.BloomFilterGroupQuery;
 
 public class BloomFilterCountDistinct extends BaseCountDistinct{

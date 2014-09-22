@@ -1,4 +1,4 @@
-package com.duowan.hummingbird.gamma.pool;
+package com.duowan.hummingbird.util.bloomfilter;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +51,7 @@ public class BloomFilterDB {
 			try {
 				bf.dump();
 			} catch (Exception e) {
-				throw new RuntimeException("error dump",e);
+				logger.error("dump error",e);
 			}
 		}
 	}

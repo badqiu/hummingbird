@@ -1,4 +1,4 @@
-package com.duowan.hummingbird.gamma.pool;
+package com.duowan.hummingbird.util.bloomfilter;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;

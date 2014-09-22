@@ -22,6 +22,6 @@ public interface CountDistinctProvider {
 	 * @param values
 	 * @return
 	 */
-	Map<String,Integer> offerForCardinality(String group,List<HyperLogLogQuery> query);
+	void offer(String group,List<HyperLogLogQuery> query);
 	
 }

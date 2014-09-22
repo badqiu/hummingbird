@@ -16,7 +16,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mvel2.PropertyAccessException;
+import org.mvel2.CompileException;
 
 import com.duowan.common.util.DateConvertUtils;
 import com.duowan.hummingbird.TestData;
@@ -41,7 +41,7 @@ public class BirdDatabaseTest {
 	
 	@Test
 	public void test() throws Exception {
-		printRows(db.select("select game,game_server,count(dur),sum(dur),count_distinct(passport,'day'),hll_count_distinct(passport,'day') from user where game != 'as' group by game,game_server"));
+		printRows(db.select("select game,game_server,count(dur),sum(dur),bf_count_distinct(passport,'day'),hll_count_distinct(passport,'day') from user where game != 'as' group by game,game_server"));
 		printRows(db.select("select count(dur),sum(dur),count_distinct(passport),hll_count_distinct(passport) from user where game != 'as' group by game,game_server"));
 		printRows(db.select("select diy_key,extract(stime,'yyyyMMdd') as tdate,game,game_server,count(dur),sum(dur),count_distinct(passport) from user u join dim_user du on u.game = du.game where game != 'as' group by diy_key,extract(stime,'yyyyMMdd'),game,game_server having game = 'hz' "));
 		printRows(db.select("select id,diy_key,extract(stime,'yyyyMMdd') as tdate,game,game_server,dur,passport from user u join dim_user du on u.game = du.game where game != 'as' limit 0,2"));
@@ -50,7 +50,7 @@ public class BirdDatabaseTest {
 		printRows(db.select("select id,'sub select' subselect,game,game_server,dur,passport from (select id,stime,game,game_server,dur,passport from user) t  order by id asc limit 2,3"));
 	}
 	
-	@Test(expected=PropertyAccessException.class)
+	@Test(expected=CompileException.class)
 	public void method_not_exist() throws Exception {
 		printRows(db.select("select game,game_server,no_exist_method(game) from user where game != 'as' "));
 	}
@@ -140,7 +140,7 @@ public class BirdDatabaseTest {
 			assertContains(rows,"game","ddt","hz");
 		}
 		{
-			List<Map> rows = db.select("select game,count(dur),sum(dur),count_distinct(passport,'day') from user where game != 'as' group by game");
+			List<Map> rows = db.select("select game,count(dur),sum(dur),bf_count_distinct(passport,'day') from user where game != 'as' group by game");
 			printRows(rows);
 			assertContains(rows,"game","ddt","hz");
 			assertContains(rows,"count_dur",4.0,3.0);

@@ -1,4 +1,4 @@
-package com.duowan.hummingbird.gamma.pool;
+package com.duowan.hummingbird.util.bloomfilter;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
