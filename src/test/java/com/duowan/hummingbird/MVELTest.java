@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.mvel2.MVEL;
 
 import com.duowan.common.util.DateConvertUtils;
+import com.duowan.hummingbird.util.MVELUtil;
 
 public class MVELTest {
 
@@ -81,6 +82,12 @@ public class MVELTest {
 			array.add("param"+i);
 		}
 		return StringUtils.join(array,",");
+	}
+	
+	@Test
+	public void test2() {
+		System.out.println(MVELUtil.eval("0== 0 or 1== 1", new HashMap()));
+		System.out.println(MVELUtil.eval("0==0 || 1==0", new HashMap()));
 	}
 	
 //	@Test

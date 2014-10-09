@@ -11,11 +11,11 @@
 # 12. 支持redis, mysql 插入出错重试机制
 13. 与spring集成,或者是 globalContext集成
 # 14. sql 支持函数
-支持 property get函数,collect_map() 聚集函数
+# 支持 property get函数,collect_map() 聚集函数
 # 支持 没有group by的 select
-#支持子查询
-支持增加自定义聚集函数,函数
-优化 bloomfilter 及hll count_distinct()的性能,使用批量接口
+# 支持子查询
+# 支持增加自定义聚集函数,函数
+# 优化 bloomfilter 及hll count_distinct()的性能,使用批量接口
 进行性能测试
 #支持select *
 删除Profiler相关代码
@@ -39,9 +39,8 @@ sql支持命名参数
 SQL特性
 	case when
 	between
+	in
 	union,union all
-
-
 
 数据自定义配置
 #	com.duowan.hummingbird.db.sql.select.SelectItem : 自定义聚集函数

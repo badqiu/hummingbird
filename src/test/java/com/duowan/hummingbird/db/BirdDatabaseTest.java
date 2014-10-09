@@ -6,7 +6,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -194,6 +194,21 @@ public class BirdDatabaseTest {
 //		}
 //		
 //	}
+	
+	@Test
+	public void where_or_and() throws Exception {
+		List<Map> rows = db.select("select id,extract(stime,'yyyyMMdd') as tdate,game,game_server,dur,passport from user  where 1=0 or 0=0  ");
+		printRows(rows);
+		assertFalse(rows.isEmpty());
+		
+		rows = db.select("select id,extract(stime,'yyyyMMdd') as tdate,game,game_server,dur,passport from user  where 1=0 and 0=0  ");
+		printRows(rows);
+		assertTrue(rows.isEmpty());
+		
+		rows = db.select("select id,extract(stime,'yyyyMMdd') as tdate,game,game_server,dur,passport from user  where 0=0 or 1=0  ");
+		printRows(rows);
+		assertFalse(rows.isEmpty());
+	}
 	
 	@Test
 	public void insertInto() throws Exception {

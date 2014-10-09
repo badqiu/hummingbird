@@ -88,7 +88,7 @@ public class MVELUtil {
 	}
 	
 	public static String sqlWhere2MVELExpression(String where) {
-		return StringUtils.replace(StringUtils.replace(where.replaceAll("[^!><]=", "=="),"OR","or"),"AND","and");
+		return StringUtils.replace(StringUtils.replace(where.replaceAll("[^!><]=", "=="),"OR","||"),"AND","&&");
 	}
 
 	public static void registerFunctions(Map<String, Method> map) {

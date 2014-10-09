@@ -19,6 +19,10 @@ public class CardinalityDB {
 		startDumpThread();
 	}
 
+	public CardinalityContainer getCardinalityContainer(String cardinalityName,String partition) {
+		return getPartitionedCardinalityContainer(cardinalityName).get(partition);
+	}
+	
 	public PartitionedCardinalityContainer getPartitionedCardinalityContainer(String cardinalityName) {
 		PartitionedCardinalityContainer result = db.get(cardinalityName);
 		if(result == null) {

@@ -1,5 +1,7 @@
 package com.duowan.hummingbird.util.cardinality;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,13 +23,19 @@ public class PartitionedCardinalityContainer {
 	public CardinalityContainer get(String partition) {
 		CardinalityContainer result = partitions.get(partition);
 		if(result == null) {
-			result = loadCardinalityContainer(partition);
+			try {
+				result = loadCardinalityContainer(partition);
+			} catch (Exception e) {
+				throw new RuntimeException("error on loadCardinalityContainer,partition:"+partition);
+			}
 		}
 		return result;
 	}
 	
-	private CardinalityContainer loadCardinalityContainer(String partition) {
-		return null;
+	private CardinalityContainer loadCardinalityContainer(String partition) throws FileNotFoundException, ClassNotFoundException, IOException {
+		CardinalityContainer cc = new CardinalityContainer(baseDir+"/"+partition);
+		cc.recover();
+		return cc;
 	}
 
 	public void cleanNoChangeFromMemory() {
@@ -39,6 +47,8 @@ public class PartitionedCardinalityContainer {
 			}
 		}
 	}
+	
+	
 	
 	public void dump() {
 		for(CardinalityContainer cc : partitions.values()) {

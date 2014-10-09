@@ -19,34 +19,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import com.clearspring.analytics.stream.cardinality.HyperLogLog;
 import com.clearspring.analytics.stream.cardinality.ICardinality;
 
 public class CardinalityContainer {
 	private final static Logger LOG = LoggerFactory.getLogger(PartitionedCardinalityContainer.class);
 	
-	private Map<String, ICardinality> partitions = new ConcurrentHashMap<String, ICardinality>();
+	private Map<String, ICardinality> container = new ConcurrentHashMap<String, ICardinality>();
 	private String baseDir;
 	private boolean changed = false;
-	
-	public CardinalityContainer(String baseDir) throws FileNotFoundException, ClassNotFoundException, IOException {
+	private CardinalityFactory factory;
+	public CardinalityContainer(String baseDir)  {
 		Assert.hasText(baseDir,"baseDir must be not empty");
 		this.baseDir = baseDir;
-		recover();
 	}
 	
 	public Map<String, ICardinality> getPartitons(){
-		return partitions;
+		return container;
 	}
 
 	public ICardinality getCardinality(String key) {
 		changed = true;
-		ICardinality r = partitions.get(key);
+		ICardinality r = container.get(key);
 		if(r == null) {
-			int log2m = 25;
-			r = new HyperLogLog(log2m);
-			LOG.info("create hyperLogLog instance" + "the number of bits to use:" + log2m);
-			partitions.put(key, r);
+			r = factory.create();
+			container.put(key, r);
 		}
 		return r;
 	}
@@ -64,7 +60,7 @@ public class CardinalityContainer {
 		try{
 			long start = System.currentTimeMillis();
 			oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-			for(Map.Entry<String, ICardinality> entry : partitions.entrySet()) {
+			for(Map.Entry<String, ICardinality> entry : container.entrySet()) {
 				oos.writeObject(new ICardinalityWraper(entry.getKey(), entry.getValue()));
 			}
 			long cost = System.currentTimeMillis() - start;
@@ -79,7 +75,7 @@ public class CardinalityContainer {
 	}
 
 	public void recover() throws FileNotFoundException, ClassNotFoundException, IOException {
-		partitions = recover0();
+		container = recover0();
 	}
 	
 	private Map<String, ICardinality> recover0() throws FileNotFoundException, IOException, ClassNotFoundException {
@@ -98,9 +94,8 @@ public class CardinalityContainer {
 			try {
 				while(true) {
 					w = (ICardinalityWraper)ois.readObject();
-					result.put(w.key, HyperLogLog.Builder.build(w.bytes));
+					result.put(w.key, factory.recover(w.bytes));
 				}
-				
 			} catch (EOFException e) {
 				// TODO: handle exception
 			}

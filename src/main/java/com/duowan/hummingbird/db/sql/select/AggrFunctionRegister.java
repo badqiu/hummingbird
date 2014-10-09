@@ -28,7 +28,7 @@ public class AggrFunctionRegister {
 	
 	private  Map<String, AggrFunction> aggrFunctionMap = new HashMap();
 	{
-		aggrFunctionMap.put("hyper_log_log", new HyperLogLogCountDistinct());
+		aggrFunctionMap.put("cardinality_offer", new HyperLogLogCountDistinct());
 		aggrFunctionMap.put("bf_count_distinct", new BloomFilterCountDistinct());
 		aggrFunctionMap.put("count", new Count());
 		aggrFunctionMap.put("sum", new Sum());

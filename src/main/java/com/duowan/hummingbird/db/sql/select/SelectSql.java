@@ -241,10 +241,10 @@ public class SelectSql {
 			return rows;
 		}
 		List<Map> result = new ArrayList<Map>();
-		String replacedWhere = MVELUtil.sqlWhere2MVELExpression(where);
+		String replacedWhere = "return (" + MVELUtil.sqlWhere2MVELExpression(where)+")";
 		Serializable expr = MVELUtil.getMVELCompileExpression(replacedWhere);
 		for(Map row : rows) {
-			Boolean r = MVELUtil.executeExpression(expr, row,Boolean.class);
+			Boolean r = (Boolean)MVELUtil.executeExpression(expr, row);
 			if(r) {
 				result.add(row);
 			}
