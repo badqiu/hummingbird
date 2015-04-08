@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.mvel2.MVEL;
 import org.springframework.util.Assert;
 
+import com.duowan.common.util.Profiler;
 import com.duowan.hummingbird.db.aggr.AggrFunction;
 import com.duowan.hummingbird.db.aggr.Avg;
 import com.duowan.hummingbird.db.aggr.BloomFilterCountDistinct;
@@ -92,19 +93,15 @@ public class SelectItem {
 //		return result;
 //	}
 
-	private String getAggrExpr() {
-		Assert.notEmpty(params,"params must be not empty");
-		String expr = params[0]; //first param is value
-		Assert.hasText(expr, "expr must be not empty");
-		return expr;
-	}
+//	private String getAggrExpr() {
+//		Assert.notEmpty(params,"params must be not empty");
+//		String expr = params[0]; //first param is value
+//		Assert.hasText(expr, "expr must be not empty");
+//		return expr;
+//	}
 	
 	
-	public Object execSelect(Map row) {
-		if(allTableColumns) {
-			return row;
-		}
-		
+	public Object execSelect(Map row) {		
 		return MVELUtil.eval(getExpr(),row); //TODO 需要性能优化
 	}
 
@@ -125,35 +122,38 @@ public class SelectItem {
 		return r;
 	}
 
-	private List<Object> extractValues(List<Map> list, String expr) {
-
-		List<Object> result = new ArrayList();
-		for (Map row : list) {
-			Object v = MVELUtil.eval(expr, row);
-			result.add(v);
-		}
-		return result;
-	}
+//	private List<Object> extractValues(List<Map> list, String expr) {
+//		List<Object> result = new ArrayList();
+//		for (Map row : list) {
+//			Object v = MVELUtil.eval(expr, row);
+//			result.add(v);
+//		}
+//		return result;
+//	}
 
 	public Map<GroupByValue,Object> execGroupBy(Map<GroupByValue, List<Map>> groupByedRows) {
 		AggrFunction function = aggrFunctionRegister.getRequiredFunction(this.func);
-		String aggrExpr = getAggrExpr();
-		Object[] aggrAttachParams = getAttachAggrParamValues();
-		Map<GroupByValue,List<Object>> funcParam = new HashMap<GroupByValue,List<Object>>();
-		for(Map.Entry<GroupByValue, List<Map>> entry : groupByedRows.entrySet()) {
-			List<Map> groupRows = entry.getValue();
-			List<Object> values = extractValues(groupRows,aggrExpr);
-			funcParam.put(entry.getKey(), values);
-		}
-		Map<GroupByValue,Object> aggrValue = function.execByBatch(funcParam,aggrAttachParams);
+//		String aggrExpr = getAggrExpr();
+//		Object[] aggrAttachParams = getAttachAggrParamValues();
+//		Profiler.enter("aggr function extractValues:"+aggrExpr);
+//		Map<GroupByValue,List<Object>> funcParam = new HashMap<GroupByValue,List<Object>>();
+//		for(Map.Entry<GroupByValue, List<Map>> entry : groupByedRows.entrySet()) {
+//			List<Map> groupRows = entry.getValue();
+//			List<Object> values = extractValues(groupRows,aggrExpr);
+//			funcParam.put(entry.getKey(), values);
+//		}
+//		Profiler.release();
+		Profiler.enter("aggr function.execByBatch,function:"+function);
+		Map<GroupByValue,Object> aggrValue = function.execByBatch(groupByedRows,params);
+		Profiler.release();
 		return aggrValue;
 	}
 
-	private Object[] getAttachAggrParamValues() {
-		String[] attachAggrParams = (String[])ArrayUtils.subarray(params, 1, params.length);
-		Object[] attachAggrParamValues = (Object[])MVELUtil.eval("{"+StringUtils.join(attachAggrParams,",")+"}", new HashMap());
-		return attachAggrParamValues;
-	}
+//	private Object[] getAttachAggrParamValues() {
+//		String[] attachAggrParams = (String[])ArrayUtils.subarray(params, 1, params.length);
+//		Object[] attachAggrParamValues = (Object[])MVELUtil.eval("{"+StringUtils.join(attachAggrParams,",")+"}", new HashMap());
+//		return attachAggrParamValues;
+//	}
 
 	public boolean isAggrFunction() {
 		return aggrFunctionRegister.isAggrFunction(func);

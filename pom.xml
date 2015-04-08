@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.duowan.hummingbird</groupId>
 	<artifactId>hummingbird</artifactId>
-	<version>0.0.9-SNAPSHOT</version>
+	<version>0.0.12-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<!-- deploy path -->
@@ -38,6 +38,12 @@
 			<dependency>
 			  <groupId>com.duowan.realtime</groupId>
 			  <artifactId>data-computing-client</artifactId>
+			  <version>1.0-SNAPSHOT</version>
+			</dependency>
+			
+			<dependency>
+			  <groupId>com.yy.distinctservice</groupId>
+			  <artifactId>distinctservice-client</artifactId>
 			  <version>1.0-SNAPSHOT</version>
 			</dependency>
 

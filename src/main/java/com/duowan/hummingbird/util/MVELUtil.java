@@ -3,7 +3,9 @@ package com.duowan.hummingbird.util;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,12 +20,14 @@ public class MVELUtil {
 	}
 	
 	static Map<String,Serializable> exprCache = new HashMap();
-	static Map<String,Method> methods = new HashMap<String,Method>();
+	static Map<String,Object> methods = new HashMap<String,Object>();
 	
 	static {
 		methods.putAll(getPublicStaticMethods(Math.class));
 		methods.putAll(getPublicStaticMethods(DateConvertUtils.class));
 		methods.putAll(getPublicStaticMethods(StringUtils.class));
+		methods.putAll(getPublicStaticMethods(Functions.class));
+		methods.putAll(getPublicStaticMethods(System.class));
 	}
 	
 	public static Serializable getMVELCompileExpression(String expr) {
@@ -100,4 +104,24 @@ public class MVELUtil {
 		return (T)MVEL.executeExpression(expr,withMethodMap(vars),clazz);
 	}
 
+	public static List<Object> extractNotNullValues(List<Map> list, String expr) {
+		return extractValues(list, expr, true);
+	}
+	
+	public static List<Object> extractValues(List<Map> list, String expr) {
+		return extractValues(list, expr, false);
+	}
+	
+	public static List<Object> extractValues(List<Map> list, String expr,boolean ignoreNullValue) {
+		List<Object> result = new ArrayList<Object>();
+		for (Map row : list) {
+			Object v = MVELUtil.eval(expr, row);
+			if(ignoreNullValue && v == null){// null 值不参与做聚合
+				continue ;
+			}
+			result.add(v);
+		}
+		return result;
+	}
+	
 }

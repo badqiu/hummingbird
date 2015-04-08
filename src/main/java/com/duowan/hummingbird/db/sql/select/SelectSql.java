@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import net.sf.jsqlparser.JSQLParserException;
 
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.mvel2.MVEL;
 import org.springframework.util.Assert;
@@ -193,7 +194,12 @@ public class SelectSql {
 //				List<Map> selectRows = groupBySelect(groupByedRows);
 //				Profiler.release();
 //				return selectRows;
-				return selectForGroupByedMap(groupByedRows);
+				try {
+					Profiler.enter("selectForGroupByedMap");
+					return selectForGroupByedMap(groupByedRows);
+				}finally {
+					Profiler.release();
+				}
 			}
 		}
 		
@@ -203,10 +209,11 @@ public class SelectSql {
 				Map map = new HashMap();
 				for(SelectItem item : selectItems) {
 					Object value = item.execSelect(row);
-					if(value instanceof Map) {
-						map.putAll((Map)value);
+					if(item.allTableColumns) {
+						map.putAll((Map)row);
 						continue;
 					}
+
 					
 					if(StringUtils.isEmpty(item.getAlias())) {
 						map.put(item.getExpr(),value);
@@ -240,16 +247,24 @@ public class SelectSql {
 		if(StringUtils.isBlank(where)) {
 			return rows;
 		}
+		String replacedWhere = MVELUtil.sqlWhere2MVELExpression(where) 
+				;
 		List<Map> result = new ArrayList<Map>();
-		String replacedWhere = "return (" + MVELUtil.sqlWhere2MVELExpression(where)+")";
-		Serializable expr = MVELUtil.getMVELCompileExpression(replacedWhere);
 		for(Map row : rows) {
-			Boolean r = (Boolean)MVELUtil.executeExpression(expr, row);
+			Boolean r = (Boolean)MVELUtil.eval(replacedWhere, row);//TODO 此处可以性能优化,避免需要多次 eval
 			if(r) {
 				result.add(row);
 			}
 		}
 		return result;
+		
+//		String script = "var result = []; for(row : rows) {  if("+replacedWhere+") result.add(row); }; return result;";
+//		Map vars = new HashMap(){
+//			
+//		};
+//		vars.put("rows",rows);
+//		List<Map> result = (List<Map>)MVELUtil.eval(script, vars);
+//		return result;
 	}
 	
 
@@ -258,10 +273,11 @@ public class SelectSql {
 		GroupBy groupByObj = getGroupByObj();
 		Map<GroupByValue,List<Map>> result = new HashMap<GroupByValue,List<Map>>();
 		int groupByItemSize = groupByObj.getGroupByList().size();
+		Profiler.enter("groupBy loop");
 		for(Map row : rows) {
 			GroupByValue gbv = new GroupByValue(groupByItemSize);
-			for(Serializable group : groupByObj.getMvelGroupByExprs()) {
-				Object value = MVELUtil.executeExpression(group,row); //此处可性能优化
+			for(String group : groupByObj.getGroupByList()) {
+				Object value = MVELUtil.eval(group, row); //此处可性能优化
 				gbv.add(value);
 			}
 //			List groupByArrayValue = (List)MVEL.eval("["+groupBy+"]",row);
@@ -274,7 +290,7 @@ public class SelectSql {
 			}
 			groupRows.add(row);
 		}
-
+		Profiler.release();
 		return result;
 	}
 	
@@ -323,8 +339,11 @@ public class SelectSql {
 		GroupBy groupBy = getGroupByObj();
 		List<String> groupByList = groupBy.getGroupByList();
 		
+		Profiler.enter("execForAggrFunctionsResult");
 		Map<SelectItem, Map> aggrFunctionsResult = execForAggrFunctionsResult(groupByedMap);
+		Profiler.release();
 		
+		Profiler.enter("mapping to final aggr result");
 		List<Map> result = new ArrayList(groupByedMap.size());
 		for(Map.Entry<GroupByValue, List<Map>> entry : groupByedMap.entrySet()) {
 			GroupByValue gbv = entry.getKey();
@@ -332,7 +351,7 @@ public class SelectSql {
 			Map itemGroupByResult = new HashMap();
 			for(SelectItem item : selectItems) {
 				if(item.isAggrFunction()) {
-					Map<GroupByValue,Double> funcResult = aggrFunctionsResult.get(item);
+					Map<GroupByValue,Object> funcResult = aggrFunctionsResult.get(item);
 					Object value = funcResult.get(gbv);
 					String alias = StringUtils.defaultIfBlank(item.getAlias(), item.getFunc()+"_"+item.getParams()[0]);
 					itemGroupByResult.put(alias,value);
@@ -344,6 +363,7 @@ public class SelectSql {
 			}
 			result.add(itemGroupByResult);
 		}
+		Profiler.release();
 		
 		return result;
 	}
@@ -391,7 +411,8 @@ public class SelectSql {
 		}
 		@Override
 		public int hashCode() {
-	        return Arrays.hashCode(list.toArray());
+//	        return Arrays.hashCode(list.toArray());
+			return list.hashCode();
 		}
 		@Override
 		public boolean equals(Object obj) {
@@ -405,7 +426,7 @@ public class SelectSql {
 			if (list == null) {
 				if (other.list != null)
 					return false;
-			} else if (!Arrays.equals(list.toArray(), other.list.toArray()))
+			} else if (!other.list.equals(other.list))
 				return false;
 			return true;
 		}
@@ -446,9 +467,16 @@ public class SelectSql {
 			return groupByList;
 		}
 	}
+	
+	private static Map<String,SelectSql> sqlCache = new LRUMap(20000);
 	public static SelectSql parse(String querySql) {
 		try {
-			return new SqlParser().parseForSelectSql(querySql);
+			SelectSql result = sqlCache.get(querySql);
+			if(result == null) {
+				result = new SqlParser().parseForSelectSql(querySql);
+				sqlCache.put(querySql, result);
+			}
+			return result;
 		} catch (JSQLParserException e) {
 			throw new RuntimeException("parse error on query:"+querySql,e);
 		}

@@ -2,14 +2,20 @@ package com.duowan.hummingbird.db.aggr;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.ComparatorUtils;
+
+import com.duowan.hummingbird.util.MVELUtil;
 
 public class Min extends BaseAggrFunction implements AggrFunction{
 
 	@Override
-	public Object exec(List groupBy, List<Object> values,Object[] params) {
-		return Collections.min(values,ComparatorUtils.NATURAL_COMPARATOR);
+	public Object exec(List groupBy,List<Map> values,Object[] params){
+		String expr = String.valueOf(params[0]);
+		List<Object> querys = MVELUtil.extractNotNullValues(values, expr) ;
+		
+		return Collections.min(querys,ComparatorUtils.NATURAL_COMPARATOR);
 	}
 
 }

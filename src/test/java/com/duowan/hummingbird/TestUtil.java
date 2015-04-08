@@ -8,10 +8,11 @@ import java.util.Map;
 
 public class TestUtil {
 
-	public static void printRows(List<Map> select) {
+	public static List<Map> printRows(List<Map> select) {
 		for(Map row : select) {
 			System.out.println(row);
 		}
+		return select;
 	}
 
 	public static void assertContains(List<Map> rows, String key, Object... values) {

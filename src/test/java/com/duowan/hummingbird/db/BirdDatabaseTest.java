@@ -6,7 +6,8 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,10 +20,13 @@ import org.junit.Test;
 import org.mvel2.CompileException;
 
 import com.duowan.common.util.DateConvertUtils;
+import com.duowan.common.util.Profiler;
 import com.duowan.hummingbird.TestData;
 import com.duowan.hummingbird.db.aggr.CountDistinctProviderImpl;
+import com.duowan.hummingbird.util.ObjectSqlQueryUtil;
 import com.duowan.realtime.computing.BloomFilterClient;
 import com.duowan.realtime.computing.HyperLogLogClient;
+import com.yy.distinctservice.client.BloomFilterClientProvider;
 
 public class BirdDatabaseTest {
 
@@ -31,7 +35,7 @@ public class BirdDatabaseTest {
 	@Before
 	public void before() throws Exception {
 		CountDistinctProviderImpl provider = new CountDistinctProviderImpl();
-		provider.setBloomFilterClient(new BloomFilterClient());
+		provider.setBloomFilterClient(new BloomFilterClientProvider());
 		provider.setHyperLogLogClient(new HyperLogLogClient());
 		BirdDatabase.setCountDistinctProvider(provider);
 		
@@ -41,18 +45,23 @@ public class BirdDatabaseTest {
 	
 	@Test
 	public void test() throws Exception {
-		printRows(db.select("select game,game_server,count(dur),sum(dur),bf_count_distinct(passport,'day'),hll_count_distinct(passport,'day') from user where game != 'as' group by game,game_server"));
-		printRows(db.select("select count(dur),sum(dur),count_distinct(passport),hll_count_distinct(passport) from user where game != 'as' group by game,game_server"));
-		printRows(db.select("select diy_key,extract(stime,'yyyyMMdd') as tdate,game,game_server,count(dur),sum(dur),count_distinct(passport) from user u join dim_user du on u.game = du.game where game != 'as' group by diy_key,extract(stime,'yyyyMMdd'),game,game_server having game = 'hz' "));
-		printRows(db.select("select id,diy_key,extract(stime,'yyyyMMdd') as tdate,game,game_server,dur,passport from user u join dim_user du on u.game = du.game where game != 'as' limit 0,2"));
-		printRows(db.select("select id,extract(stime,'yyyyMMdd') as tdate,game,game_server,dur,passport from user order by id asc limit 2,3"));
-		
-		printRows(db.select("select id,'sub select' subselect,game,game_server,dur,passport from (select id,stime,game,game_server,dur,passport from user) t  order by id asc limit 2,3"));
+		printRows(db.select("select game,game_server,count(dur),sum(dur),bf_count_distinct('test_db_01','day',format(stime,'yyyyMMdd'),passport) as distinct_count,cardinality_offer(passport,'day') from user where game != 'as' group by format(stime,'yyyyMMdd'),game,game_server"));
+//		printRows(db.select("select count(dur),sum(dur),cardinality_offer(passport) from user where game != 'as' group by game,game_server"));
+//		printRows(db.select("select diy_key,extract(stime,'yyyyMMdd') as tdate,game,game_server,count(dur),sum(dur) from user u join dim_user du on u.game = du.game where game != 'as' group by diy_key,extract(stime,'yyyyMMdd'),game,game_server having game = 'hz' "));
+//		printRows(db.select("select id,diy_key,extract(stime,'yyyyMMdd') as tdate,game,game_server,dur,passport from user u join dim_user du on u.game = du.game where game != 'as' limit 0,2"));
+//		printRows(db.select("select id,extract(stime,'yyyyMMdd') as tdate,game,game_server,dur,passport from user order by id asc limit 2,3"));
+//		
+//		printRows(db.select("select id,'sub select' subselect,game,game_server,dur,passport from (select id,stime,game,game_server,dur,passport from user) t  order by id asc limit 2,3"));
 	}
 	
 	@Test(expected=CompileException.class)
 	public void method_not_exist() throws Exception {
 		printRows(db.select("select game,game_server,no_exist_method(game) from user where game != 'as' "));
+	}
+	
+	@Test()
+	public void exists_function() throws Exception {
+		assertEquals(7,printRows(db.select("select game,game_server from user where cin(game,'as','ddt')")).size());
 	}
 	
 	@Test
@@ -241,6 +250,43 @@ public class BirdDatabaseTest {
 		}catch(RuntimeException e) {
 			assertTrue(e.getMessage(),e.getMessage().equals("not found table by:not_exist_user as null"));
 		}
+	}
+	
+	@Test
+	public void test_perf() throws Exception {
+//		int count = 1000;
+		int count = 500000;
+		List<Map> datas = Arrays.asList(TestData.getTestDatas(count));
+		System.out.println("------------- start query");
+		sqlPref(datas,"select count(dur),sum(dur) from t where game!='as' and game_server!='aaa' group by game,game_server");
+		sqlPref(datas,"select count(dur),sum(dur) from t  group by game,game_server");
+		objectSqlQueryUtilPerf(datas, "select count(distinct passport),sum(dur) from t  group by game,game_server", count);
+	}
+
+	private void sqlPref(List datas,String sql) throws Exception {
+		long count = datas.size();
+		db.insert("t", datas.subList(0, 10));
+		db.select(sql);
+		
+		db.insert("t", datas);
+		
+		Profiler.start("BirdDataBase",count);
+		db.select(sql);
+		Profiler.release();
+		System.out.println("\n\n==============BirdDataBase======================");
+		System.out.println(sql);
+		System.out.println(Profiler.dump());
+		
+		objectSqlQueryUtilPerf(datas, sql, count);
+	}
+
+	private void objectSqlQueryUtilPerf(List datas, String sql, long count) {
+		System.out.println("===============ObjectSqlQueryUtil: h2 database=====================");
+		System.out.println(sql);
+		Profiler.start("ObjectSqlQueryUtil",count);
+		ObjectSqlQueryUtil.query(sql, datas);
+		Profiler.release();
+		System.out.println(Profiler.dump());
 	}
 	
 

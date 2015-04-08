@@ -1,12 +1,17 @@
 package com.duowan.hummingbird.db.aggr;
 
 import java.util.List;
+import java.util.Map;
+
+import com.duowan.hummingbird.util.MVELUtil;
 
 public class Sum extends BaseAggrFunction implements AggrFunction{
 
 	@Override
-	public Object exec(List groupBy, List<Object> values,Object[] params) {
-		return sum(values);
+	public Object exec(List groupBy,List<Map> values,Object[] params){
+		String expr = String.valueOf(params[0]);
+		List<Object> querys = MVELUtil.extractNotNullValues(values, expr) ;
+		return sum(querys);
 	}
 
 	public static double sum(List<Object> values) {

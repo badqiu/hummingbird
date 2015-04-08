@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.DataSource;
 
@@ -17,6 +18,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.duowan.common.util.Profiler;
+
 /**
  * 
  * 可以对List<Map>结构的数据，进行sql语句查询，底层使用H2数据库，支持任何的标准SQL语句
@@ -25,7 +28,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 public class ObjectSqlQueryUtil {
 	private static Logger log = LoggerFactory.getLogger(ObjectSqlQueryUtil.class);
-	public static String TABLE_NAME = "table_info";
+	public static String TABLE_NAME = "t";
 	
 	public static List<Map<String,Object>> query(final String sql,final List<Map<String,Object>> rows) {
 		return query(sql,rows,Collections.EMPTY_MAP);
@@ -41,7 +44,13 @@ public class ObjectSqlQueryUtil {
 		TransactionTemplate tt = new TransactionTemplate(new DataSourceTransactionManager(ds));
 		return tt.execute(new TransactionCallback<List<Map<String,Object>>>() {
 			public List<Map<String,Object>> doInTransaction(TransactionStatus status) {
-				createTableAndInsertData(TABLE_NAME,rows,ds);
+				try {
+					Profiler.enter("createTableAndInsertData");
+					createTableAndInsertData(TABLE_NAME,rows,ds);
+				}finally {
+					Profiler.release();
+				}
+				
 				final JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 				
 //				jdbcTemplate.execute("CREATE AGGREGATE IF NOT EXISTS collect_map FOR \"com.duowan.reportengine.h2.functions.CollectMapAggrFunction\"");
@@ -51,8 +60,13 @@ public class ObjectSqlQueryUtil {
 //				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS date_map FOR \"com.duowan.reportengine.h2.functions.H2Functions.date_map\"");
 //				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS get_property FOR \"com.duowan.reportengine.h2.functions.H2Functions.get_property\"");
 				
-				final NamedParameterJdbcTemplate namedJdbcTemplate = new NamedParameterJdbcTemplate(ds);
-				return MapUtil.allMapKey2LowerCase(namedJdbcTemplate.queryForList(sql,params));
+				try {
+					Profiler.enter("queryForList");
+					final NamedParameterJdbcTemplate namedJdbcTemplate = new NamedParameterJdbcTemplate(ds);
+					return MapUtil.allMapKey2LowerCase(namedJdbcTemplate.queryForList(sql,params));
+				}finally {
+					Profiler.release();
+				}
 			}
 		});
 		
@@ -176,17 +190,14 @@ public class ObjectSqlQueryUtil {
 		sql.append(" )");
 		return sql.toString();
 	}
-//	private static AtomicLong dbCount = new AtomicLong();
+	private static AtomicLong dbCount = new AtomicLong();
 	private static DataSource getDataSource() {
 		DriverManagerDataSource ds = new DriverManagerDataSource();
-		ds.setDriverClassName("org.hsqldb.jdbc.JDBCDriver");
+		ds.setDriverClassName("org.h2.Driver");
 		ds.setPassword("sa");
 		ds.setPassword("");
 //		ds.setUrl("jdbc:h2:mem:object_sql_query"+(dbCount.incrementAndGet())+";MODE=MYSQL");
-		ds.setUrl("jdbc:hsqldb:mem:mymemdb");
+		ds.setUrl("jdbc:h2:mem:object_sql_query;MODE=MYSQL;DB_CLOSE_DELAY=-1");
 		return ds;
-	}
-	static {
-		new JdbcTemplate(getDataSource()).execute("CREATE FUNCTION string_map(k CHAR,v CHAR) RETURNS BIGINT LANGUAGE JAVA DETERMINISTIC NO SQL EXTERNAL NAME 'CLASSPATH:com.duowan.hummingbird.util.H2Functions.string_map'");
 	}
 }

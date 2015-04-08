@@ -5,7 +5,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/**
+ * 
+ * bloomfilter数据库,
+ * 采用 bloomfilter db => bloomfilter partition => bloomfilter instance三级结构
+ * 类似mysql的 db => table => partition结构
+ * 
+ * @author badqiu
+ *
+ */
 public class BloomFilterDB {
 
 	private static final Logger logger = LoggerFactory.getLogger(BloomFilterDB.class);

@@ -24,10 +24,13 @@ public class TestData {
 			row.put("id", i);
 			row.put("game", data(i,"ddt","as","hz"));
 			row.put("game_server", data(i,"s1","s2","s3","s4","s5","s6"));
+			row.put("channel", data(i,"channel1","channel2"));
+			row.put("ref", data(i,"ref1"));
 			row.put("dt", new Timestamp(DateUtils.addDays(dt, i % 4).getTime()));
 			row.put("stime", new Timestamp(DateUtils.addDays(dt, i % 4).getTime()));
 			row.put("passport", i % 100);
 			row.put("dur", i % 1000);
+			row.put("keynull", null);
 			
 			Map ext = new HashMap();
 			ext.put("ext_key", "ext_value_"+i % 3);

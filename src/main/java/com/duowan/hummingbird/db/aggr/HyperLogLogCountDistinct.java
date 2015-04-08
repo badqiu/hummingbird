@@ -31,13 +31,15 @@ public class HyperLogLogCountDistinct extends BaseCountDistinct{
 //	
 	
 	@Override
-	public Map<GroupByValue, Object> execByBatch(Map<GroupByValue, List<Object>> map,Object[] params) {
+	public Map<GroupByValue, Object> execByBatch(Map<GroupByValue, List<Map>> map,Object[] params) {
 		if(ObjectUtils.isEmpty(params)) {
 			throw new RuntimeException("miss aggr params error,miss 'hllpGroup'");
 		}
-		String hllpGroup = (String)params[0];
+		String hllpGroup = (String)getAttachAggrParamValues(params)[0];
+		
+		Map<GroupByValue, List<Object>> funcParam = getSingleParam(map, params);
 		try {
-			List<HyperLogLogQuery> queryList = toHyperLogLogPlusQueryList(map);
+			List<HyperLogLogQuery> queryList = toHyperLogLogPlusQueryList(funcParam);
 			AggrFunctionRegister.getInstance().getCountDistinctProvider().offer(hllpGroup, queryList);
 //			return BloomFilterCountDistinct.mapping2Result(map, resultMap);
 			return new HashMap();

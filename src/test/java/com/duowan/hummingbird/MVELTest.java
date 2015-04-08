@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.mvel2.MVEL;
 
+import com.duowan.common.redis.RedisTemplate;
 import com.duowan.common.util.DateConvertUtils;
 import com.duowan.hummingbird.util.MVELUtil;
 
@@ -88,6 +89,12 @@ public class MVELTest {
 	public void test2() {
 		System.out.println(MVELUtil.eval("0== 0 or 1== 1", new HashMap()));
 		System.out.println(MVELUtil.eval("0==0 || 1==0", new HashMap()));
+		Map vars = new HashMap();
+		vars.put("age", (double)20.1);
+		vars.put("redis", new MockRedisTemplate());
+		
+		System.out.println(MVELUtil.eval("redis.incrBy('age',age);", vars));
+		
 	}
 	
 //	@Test
@@ -108,5 +115,12 @@ public class MVELTest {
 	    ScriptEngine engine = manager.getEngineByName("SQL");
 	    Object result = engine.eval("SELECT 1+2;");
 	    System.out.println(result);
+	}
+	
+	public static class MockRedisTemplate extends RedisTemplate {
+		public Long incrBy(String key, long integer) {
+			System.out.println("incrBy:"+key+" value:"+integer);
+			return integer;
+		}
 	}
 }

@@ -7,18 +7,18 @@
 # 6. hsqldb替换 h2数据库,因为h2性能测试不行
 7. is_new() 方法实现,用于判断新用户,而不是不同维度交叉
 # 10. 支持将结果插入数据库
-11. 支持将结果插入mq
+# 11. 支持将结果插入mq
 # 12. 支持redis, mysql 插入出错重试机制
-13. 与spring集成,或者是 globalContext集成
+# 13. 与spring集成,或者是 globalContext集成
 # 14. sql 支持函数
 # 支持 property get函数,collect_map() 聚集函数
 # 支持 没有group by的 select
 # 支持子查询
 # 支持增加自定义聚集函数,函数
 # 优化 bloomfilter 及hll count_distinct()的性能,使用批量接口
-进行性能测试
+# 进行性能测试
 #支持select *
-删除Profiler相关代码
+# 删除Profiler相关代码
 实现union,union all
 #where条件的 =号,or and有大小写问题, 替换=号时,要注意!=
 
@@ -30,7 +30,6 @@
 实现jdbc driver
 
 直接实现 bloomfilter() 聚集函数
-bloomfilter实现
 
 数据库支持设置属性;
 数据库支持上下文
@@ -40,6 +39,7 @@ SQL特性
 	case when
 	between
 	in
+	exists
 	union,union all
 
 数据自定义配置

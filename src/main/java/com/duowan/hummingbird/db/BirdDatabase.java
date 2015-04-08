@@ -19,8 +19,12 @@ public class BirdDatabase {
 	private Map<String,List<Map>> db = new ConcurrentHashMap<String, List<Map>>(); //数据库
 	private Map<String,ReentrantLock> tableLock = new HashMap(); //数据库表锁
 	private Properties props = new Properties(); //数据库属性
+
 	
-	
+	public Map<String, List<Map>> getDb() {
+		return db;
+	}
+
 	public List<Map> getTable(String table) {
 		return db.get(table);
 	}

@@ -15,8 +15,8 @@ public interface AggrFunction {
 
 	public void init(Map props);
 	
-	public Object exec(List groupBy,List<Object> values,Object[] params);
+	public Object exec(List groupBy,List<Map> values,Object[] params);
 
-	public Map<GroupByValue, Object> execByBatch(Map<GroupByValue, List<Object>> map,Object[] params);
+	public Map<GroupByValue, Object> execByBatch(Map<GroupByValue, List<Map>> map,Object[] params);
 
 }

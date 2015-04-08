@@ -1,6 +1,6 @@
 package com.duowan.hummingbird.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 
@@ -18,5 +18,19 @@ public class MVELUtilTest {
 	@Test
 	public void test2() {
 		MVELUtil.eval("abc == 123",new HashMap());
+		
+		System.out.println(MVELUtil.eval(" 1==0 ? 'true' : 'false'",new HashMap()));
+	}
+	
+	@Test
+	public void test_in() {
+		HashMap vars = new HashMap();
+		vars.put("username", "badqiu");
+		vars.put("age", 20);
+		boolean result = (Boolean)MVELUtil.eval("exists(username,'blog','badqiu')",vars);
+		assertTrue(result);
+		
+		result = (Boolean)MVELUtil.eval("exists(username,'blog','blog2')",vars);
+		assertFalse(result);
 	}
 }

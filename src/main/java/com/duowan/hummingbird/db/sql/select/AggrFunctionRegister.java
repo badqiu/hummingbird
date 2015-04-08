@@ -14,6 +14,7 @@ import com.duowan.hummingbird.db.aggr.CountDistinctProvider;
 import com.duowan.hummingbird.db.aggr.HyperLogLogCountDistinct;
 import com.duowan.hummingbird.db.aggr.Max;
 import com.duowan.hummingbird.db.aggr.Min;
+import com.duowan.hummingbird.db.aggr.OrderFirstRow;
 import com.duowan.hummingbird.db.aggr.Sum;
 
 public class AggrFunctionRegister {
@@ -28,6 +29,7 @@ public class AggrFunctionRegister {
 	
 	private  Map<String, AggrFunction> aggrFunctionMap = new HashMap();
 	{
+		aggrFunctionMap.put("order_first_row", new OrderFirstRow());
 		aggrFunctionMap.put("cardinality_offer", new HyperLogLogCountDistinct());
 		aggrFunctionMap.put("bf_count_distinct", new BloomFilterCountDistinct());
 		aggrFunctionMap.put("count", new Count());

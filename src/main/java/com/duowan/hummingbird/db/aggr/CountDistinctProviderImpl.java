@@ -5,28 +5,25 @@ import java.util.Map;
 
 import org.apache.thrift.TException;
 
-import com.duowan.realtime.computing.BloomFilterClient;
 import com.duowan.realtime.computing.HyperLogLogClient;
-import com.duowan.realtime.thirft.api.BloomFilterException;
-import com.duowan.realtime.thirft.api.BloomFilterGroupQuery;
 import com.duowan.realtime.thirft.api.HyperLogLogPlusException;
 import com.duowan.realtime.thirft.api.HyperLogLogQuery;
+import com.yy.distinctservice.client.BloomFilterClientProvider;
+import com.yy.distinctservice.thirft.api.DistinctData;
+import com.yy.distinctservice.thirft.api.DistinctRequest;
 
 public class CountDistinctProviderImpl implements CountDistinctProvider {
 
 	private HyperLogLogClient hyperLogLogClient;
-	private BloomFilterClient bloomFilterClient;
+	private BloomFilterClientProvider bloomFilterClient;
 	
 	@Override
-	public Map<String,Integer> bloomFilterNotContainsCountAndAdd(String group,
-			List<BloomFilterGroupQuery> querys) {
+	public Map<String,Integer> bloomFilterNotContainsCountAndAdd(String bloomfilterDb,String bloomfilterGroup,List<DistinctRequest>  querys) {
 		try {
-			return bloomFilterClient.notContainsCountAndAdd(group, querys);
-		} catch (BloomFilterException e) {
+			return bloomFilterClient.notContainsCountAndAdd(bloomfilterDb,bloomfilterGroup, querys);
+		} catch (Exception e) {
 			throw new RuntimeException("notContainsCountAndAdd() error",e);
-		} catch (TException e) {
-			throw new RuntimeException("notContainsCountAndAdd() error",e);
-		}
+		} 
 	}
 
 	@Override
@@ -40,12 +37,22 @@ public class CountDistinctProviderImpl implements CountDistinctProvider {
 		}
 	}
 
-	public void setBloomFilterClient(BloomFilterClient bloomFilterClient) {
+	public void setBloomFilterClient(BloomFilterClientProvider bloomFilterClient) {
 		this.bloomFilterClient = bloomFilterClient;
 	}
 
 	public void setHyperLogLogClient(HyperLogLogClient hyperLogLogClient) {
 		this.hyperLogLogClient = hyperLogLogClient;
+	}
+
+	@Override
+	public Map<String, List<DistinctData>> bloomFilterNotContainsCountAndAddAndReturnExt(String bloomfilterDb, String bloomfilterGroup, List<DistinctRequest> querys) {
+		
+		try {
+			return bloomFilterClient.notContainsAndMarkBatchGroup(bloomfilterDb, bloomfilterGroup, querys);
+		} catch (Exception e) {
+			throw new RuntimeException("notContainsAndMarkBatchGroup() error",e);
+		} 
 	}
 	
 	

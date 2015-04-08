@@ -5,14 +5,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import com.duowan.hummingbird.util.MVELUtil;
 
 public class CollectSet extends BaseAggrFunction implements AggrFunction {
 
 	@Override
-	public Object exec(List groupBy, List<Object> values, Object[] params) {
+	public Object exec(List groupBy,List<Map> values,Object[] params){
+		String expr = String.valueOf(params[0]);
+		List<Object> querys = MVELUtil.extractValues(values, expr) ;
 		Set set = new HashSet();
-		addAll(values, set);
+		addAll(querys, set);
 		return set;
 	}
 

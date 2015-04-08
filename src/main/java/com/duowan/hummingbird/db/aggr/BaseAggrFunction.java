@@ -12,9 +12,9 @@ public abstract class BaseAggrFunction implements AggrFunction{
 		super();
 	}
 
-	public Map<GroupByValue, Object> execByBatch(Map<GroupByValue, List<Object>> funcParam,Object[] params) {
+	public Map<GroupByValue, Object> execByBatch(Map<GroupByValue, List<Map>> funcParam,Object[] params) {
 		Map<GroupByValue,Object> result = new HashMap();
-		for(Map.Entry<GroupByValue, List<Object>> entry : funcParam.entrySet()) {
+		for(Map.Entry<GroupByValue, List<Map>> entry : funcParam.entrySet()) {
 			GroupByValue key = entry.getKey();
 			Object exec = exec(key.list,entry.getValue(),params);
 			result.put(key, exec);
