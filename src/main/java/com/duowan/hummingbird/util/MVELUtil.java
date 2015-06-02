@@ -12,7 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.mvel2.MVEL;
 import org.mvel2.util.ParseTools;
 
-import com.duowan.common.util.DateConvertUtils;
+import com.github.rapid.common.util.DateConvertUtil;
 
 public class MVELUtil {
 	private static boolean isReservedWord(String name) {
@@ -24,7 +24,7 @@ public class MVELUtil {
 	
 	static {
 		methods.putAll(getPublicStaticMethods(Math.class));
-		methods.putAll(getPublicStaticMethods(DateConvertUtils.class));
+		methods.putAll(getPublicStaticMethods(DateConvertUtil.class));
 		methods.putAll(getPublicStaticMethods(StringUtils.class));
 		methods.putAll(getPublicStaticMethods(Functions.class));
 		methods.putAll(getPublicStaticMethods(System.class));

@@ -10,8 +10,8 @@ import org.mvel2.MVEL;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Transaction;
 
-import com.duowan.common.redis.RedisTemplate;
-import com.duowan.common.redis.RedisTransactionCallback;
+import com.github.rapid.common.redis.RedisTemplate;
+import com.github.rapid.common.redis.RedisTransactionCallback;
 
 public class RedisUtils {
 

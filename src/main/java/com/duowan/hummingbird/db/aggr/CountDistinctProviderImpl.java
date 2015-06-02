@@ -3,15 +3,6 @@ package com.duowan.hummingbird.db.aggr;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.thrift.TException;
-
-import com.duowan.realtime.computing.HyperLogLogClient;
-import com.duowan.realtime.thirft.api.HyperLogLogPlusException;
-import com.duowan.realtime.thirft.api.HyperLogLogQuery;
-import com.yy.distinctservice.client.BloomFilterClientProvider;
-import com.yy.distinctservice.thirft.api.DistinctData;
-import com.yy.distinctservice.thirft.api.DistinctRequest;
-
 public class CountDistinctProviderImpl implements CountDistinctProvider {
 
 	private HyperLogLogClient hyperLogLogClient;

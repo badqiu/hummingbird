@@ -5,22 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.mvel2.MVEL;
-import org.springframework.util.Assert;
 
-import com.duowan.common.util.Profiler;
 import com.duowan.hummingbird.db.aggr.AggrFunction;
-import com.duowan.hummingbird.db.aggr.Avg;
-import com.duowan.hummingbird.db.aggr.BloomFilterCountDistinct;
-import com.duowan.hummingbird.db.aggr.Count;
-import com.duowan.hummingbird.db.aggr.HyperLogLogCountDistinct;
-import com.duowan.hummingbird.db.aggr.Max;
-import com.duowan.hummingbird.db.aggr.Min;
-import com.duowan.hummingbird.db.aggr.Sum;
 import com.duowan.hummingbird.db.sql.select.SelectSql.GroupByValue;
 import com.duowan.hummingbird.util.MVELUtil;
+import com.github.rapid.common.util.Profiler;
 
 public class SelectItem {
 	

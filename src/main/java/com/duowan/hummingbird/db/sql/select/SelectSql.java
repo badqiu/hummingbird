@@ -16,11 +16,11 @@ import org.apache.commons.lang.StringUtils;
 import org.mvel2.MVEL;
 import org.springframework.util.Assert;
 
-import com.duowan.common.util.Profiler;
 import com.duowan.hummingbird.db.sqlparser.SqlParser;
 import com.duowan.hummingbird.db.sqlparser.SqlParserUtils;
 import com.duowan.hummingbird.util.JoinUtil;
 import com.duowan.hummingbird.util.MVELUtil;
+import com.github.rapid.common.util.Profiler;
 
 public class SelectSql {
 	private FromItem from;

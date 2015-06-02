@@ -18,7 +18,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.duowan.common.util.Profiler;
+import com.github.rapid.common.util.Profiler;
 
 /**
  * 

@@ -11,14 +11,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
-import com.duowan.common.util.DateConvertUtils;
 import com.duowan.hummingbird.db.sql.select.AggrFunctionRegister;
 import com.duowan.hummingbird.db.sql.select.SelectSql.GroupByValue;
 import com.duowan.hummingbird.util.MVELUtil;
 import com.duowan.hummingbird.util.bloomfilter.BloomFilter;
 import com.duowan.hummingbird.util.bloomfilter.BloomFilterDB;
-import com.yy.distinctservice.thirft.api.DistinctData;
-import com.yy.distinctservice.thirft.api.DistinctRequest;
 
 /**
  * 描述：返回各分组按字段排序后 （第一or最后）相应的同一记录的若干字段

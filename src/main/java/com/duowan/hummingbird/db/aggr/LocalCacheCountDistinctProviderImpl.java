@@ -3,10 +3,6 @@ package com.duowan.hummingbird.db.aggr;
 import java.util.List;
 import java.util.Map;
 
-import com.duowan.realtime.thirft.api.HyperLogLogQuery;
-import com.yy.distinctservice.thirft.api.DistinctData;
-import com.yy.distinctservice.thirft.api.DistinctRequest;
-
 /**
  * 提供本地缓存的CountDistinctProvider
  * @author badqiu

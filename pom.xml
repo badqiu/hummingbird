@@ -11,12 +11,12 @@
 		<repository>
 			<id>releases</id>
 			<name>Internal Releases</name>
-			<url>http://devserv.game.yy.com:52605/nexus/content/repositories/releases/</url>
+			<url>http://10.20.122.91/nexus/content/repositories/releases/</url>
 		</repository>
 		<snapshotRepository>
 			<id>snapshots</id>
 			<name>Internal snapshots</name>
-			<url>http://devserv.game.yy.com:52605/nexus/content/repositories/snapshots/</url>
+			<url>http://10.20.122.91/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -28,41 +28,30 @@
 
 
 	<dependencies>
-
+			<!-- 
 			<dependency>
 				  <groupId>com.clearspring.analytics</groupId>
   					<artifactId>stream</artifactId>
   					<version>2.8.0-SNAPSHOT</version>
 			</dependency>
+			 -->
 			
 			<dependency>
-			  <groupId>com.duowan.realtime</groupId>
-			  <artifactId>data-computing-client</artifactId>
-			  <version>1.0-SNAPSHOT</version>
-			</dependency>
-			
-			<dependency>
-			  <groupId>com.yy.distinctservice</groupId>
-			  <artifactId>distinctservice-client</artifactId>
-			  <version>1.0-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.duowan.common</groupId>
-				<artifactId>duowan-common-util</artifactId>
-				<version>1.0.11</version>	
+				<groupId>com.github.rapid.common</groupId>
+				<artifactId>rapid-common-util</artifactId>
+				<version>1.0.0</version>	
 			</dependency>
 			<dependency>
-				<groupId>com.duowan.common</groupId>
-				<artifactId>duowan-common-test</artifactId>
-				<version>1.0</version>
+				<groupId>com.github.rapid.common</groupId>
+				<artifactId>rapid-common-test</artifactId>
+				<version>1.0.0</version>
 				<scope>test</scope>
 			</dependency>
 
 			<dependency>
-			        <groupId>com.duowan.common</groupId>
-			        <artifactId>duowan-common-redis</artifactId>
-			        <version>1.0.1</version>
+			        <groupId>com.github.rapid.common</groupId>
+			        <artifactId>rapid-common-redis</artifactId>
+			        <version>1.0.0</version>
 			</dependency>
 
 			<dependency>
@@ -324,11 +313,11 @@
 			<artifactId>cglib-nodep</artifactId>
 			<version>2.2</version>
 		</dependency>
-		<dependency>
-			<groupId>apache-oro</groupId>
-			<artifactId>jakarta-oro</artifactId>
-			<version>2.0.8</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>apache-oro</groupId> -->
+<!-- 			<artifactId>jakarta-oro</artifactId> -->
+<!-- 			<version>2.0.8</version> -->
+<!-- 		</dependency> -->
 		<!-- spring end -->
 
 		<dependency>

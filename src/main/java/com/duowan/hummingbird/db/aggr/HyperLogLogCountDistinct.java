@@ -13,7 +13,6 @@ import org.springframework.util.ObjectUtils;
 import com.duowan.hummingbird.db.sql.select.AggrFunctionRegister;
 import com.duowan.hummingbird.db.sql.select.SelectSql.GroupByValue;
 import com.duowan.hummingbird.util.StringUtil;
-import com.duowan.realtime.thirft.api.HyperLogLogQuery;
 
 public class HyperLogLogCountDistinct extends BaseCountDistinct{
 
