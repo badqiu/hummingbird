@@ -19,14 +19,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mvel2.CompileException;
 
-import com.duowan.common.util.DateConvertUtils;
-import com.duowan.common.util.Profiler;
 import com.duowan.hummingbird.TestData;
-import com.duowan.hummingbird.db.aggr.CountDistinctProviderImpl;
+import com.duowan.hummingbird.db.aggr.bloomfilter.CountDistinctProviderImpl;
 import com.duowan.hummingbird.util.ObjectSqlQueryUtil;
-import com.duowan.realtime.computing.BloomFilterClient;
-import com.duowan.realtime.computing.HyperLogLogClient;
-import com.yy.distinctservice.client.BloomFilterClientProvider;
+import com.github.distinct_server.client.DistinctServiceClient;
+import com.github.rapid.common.util.DateConvertUtil;
+import com.github.rapid.common.util.Profiler;
 
 public class BirdDatabaseTest {
 
@@ -35,8 +33,8 @@ public class BirdDatabaseTest {
 	@Before
 	public void before() throws Exception {
 		CountDistinctProviderImpl provider = new CountDistinctProviderImpl();
-		provider.setBloomFilterClient(new BloomFilterClientProvider());
-		provider.setHyperLogLogClient(new HyperLogLogClient());
+		provider.setDistinctServiceClient(new DistinctServiceClient());
+//		provider.setHyperLogLogClient(new HyperLogLogClient());
 		BirdDatabase.setCountDistinctProvider(provider);
 		
 		db.insert("user", Arrays.asList(TestData.getTestDatas(10)));
@@ -171,7 +169,7 @@ public class BirdDatabaseTest {
 		List<Map> rows = db.select("select diy_key,extract(stime,'yyyyMMdd') as tdate,game,game_server,count(dur),sum(dur) from user u join dim_user du on u.game = du.game where game != 'as' group by diy_key,extract(stime,'yyyyMMdd'),game,game_server having game = 'hz' ");
 		printRows(rows);
 		assertContains(rows,"diy_key","diy_value");
-		assertContains(rows,"tdate",DateConvertUtils.parse("1999-1-1", "yyyy-MM-dd"),DateConvertUtils.parse("1999-1-2", "yyyy-MM-dd"),DateConvertUtils.parse("1999-1-3", "yyyy-MM-dd"));
+		assertContains(rows,"tdate",DateConvertUtil.parse("1999-1-1", "yyyy-MM-dd"),DateConvertUtil.parse("1999-1-2", "yyyy-MM-dd"),DateConvertUtil.parse("1999-1-3", "yyyy-MM-dd"));
 		assertContains(rows,"sum_dur",48.0,66.0,24.0);
 	}
 	

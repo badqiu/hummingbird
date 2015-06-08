@@ -6,17 +6,11 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import com.duowan.common.util.DateConvertUtils;
 import com.duowan.hummingbird.TestData;
 import com.duowan.hummingbird.db.BirdDatabase;
-import com.duowan.realtime.computing.BloomFilterClient;
-import com.duowan.realtime.computing.HyperLogLogClient;
-import com.duowan.realtime.webservice.DataComputingWebService;
-import com.yy.distinctservice.client.BloomFilterClientFactory;
-import com.yy.distinctservice.client.BloomFilterClientProvider;
-import com.yy.distinctservice.metastore.webservice.MetaStoreWebService;
+import com.duowan.hummingbird.db.aggr.bloomfilter.CountDistinctProviderImpl;
+import com.github.distinct_server.client.DistinctServiceClient;
 
 public class BloomFilterCountDistinctTest {
 
@@ -25,12 +19,14 @@ public class BloomFilterCountDistinctTest {
 	@Before
 	public void before() throws Exception {
 		CountDistinctProviderImpl provider = new CountDistinctProviderImpl();
-		BloomFilterClientProvider bloomFilterClient = new BloomFilterClientProvider();
+		DistinctServiceClient bloomFilterClient = new DistinctServiceClient();
+		bloomFilterClient.setHost("localhost");
+		bloomFilterClient.afterPropertiesSet();
 //		MetaStoreWebService metaStoreWebService = Mockito.mock(MetaStoreWebService.class);
 //		Mockito.when(metaStoreWebService.getServerIp(Mockito.anyString())).thenReturn("127.0.0.1") ; 
 //		BloomFilterClientFactory.setMetaStoreWebService(metaStoreWebService);
-		provider.setBloomFilterClient(bloomFilterClient);
-		provider.setHyperLogLogClient(new HyperLogLogClient());
+		provider.setDistinctServiceClient(bloomFilterClient);
+//		provider.setHyperLogLogClient(new HyperLogLogClient());
 		BirdDatabase.setCountDistinctProvider(provider);
 		
 		db.insert("user", Arrays.asList(TestData.getTestDatas(10)));
@@ -42,7 +38,7 @@ public class BloomFilterCountDistinctTest {
 		printRows(db.select("select * from user "));
 		//order_first_row for date compare
 		System.out.println(" --- bf_count_distinct --- ");
-		printRows(db.select("select game,game_server, sum(dur),bf_count_distinct(passport,'test_db_01','minute',format(parse('20141121','yyyyMMdd'),'yyyyMMdd')) as distinct_count from user   group by  'sum_new_user_ucnt',extract(parse('1970-01-01', 'yyyy-MM-dd'),'yyyyMMdd'),game"));
+		printRows(db.select("select game,game_server, sum(dur),bf_count_distinct(passport,'test_db_01','minute',format(parse('20141121','yyyyMMdd'),'yyyyMMdd')) as distinct_count from user   group by  'sum_new_user_ucnt',extract(parse('1970-01-01', 'yyyy-MM-dd'),'yyyyMMdd'),game,game_server"));
 		printRows(db.select("select game,game_server,count(dur),sum(dur),bf_count_distinct(passport,'test_db_01','minute',format(stime,'yyyyMMdd')) as distinct_count,cardinality_offer(passport,'day') from user where game != 'as' group by format(stime,'yyyyMMdd'),game,game_server"));
 		
 	}

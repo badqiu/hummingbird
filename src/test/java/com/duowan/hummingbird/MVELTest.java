@@ -22,9 +22,9 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.mvel2.MVEL;
 
-import com.duowan.common.redis.RedisTemplate;
-import com.duowan.common.util.DateConvertUtils;
 import com.duowan.hummingbird.util.MVELUtil;
+import com.github.rapid.common.redis.RedisTemplate;
+import com.github.rapid.common.util.DateConvertUtil;
 
 public class MVELTest {
 
@@ -45,7 +45,7 @@ public class MVELTest {
 		assertTrue(true);
 		MVEL.eval("import junit.framework.Assert; Assert.assertTrue(true); System.out.println('123');",new HashMap());
 		toMvelFunction(Math.class);
-		toMvelFunction(DateConvertUtils.class);
+		toMvelFunction(DateConvertUtil.class);
 		Map<String,Method> functions = toMvelFunction(StringUtils.class);
 		System.out.println(functions);
 		HashMap vars = new HashMap(functions);

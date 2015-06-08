@@ -10,12 +10,12 @@ import com.duowan.hummingbird.db.aggr.CollectList;
 import com.duowan.hummingbird.db.aggr.CollectMap;
 import com.duowan.hummingbird.db.aggr.CollectSet;
 import com.duowan.hummingbird.db.aggr.Count;
-import com.duowan.hummingbird.db.aggr.CountDistinctProvider;
-import com.duowan.hummingbird.db.aggr.HyperLogLogCountDistinct;
 import com.duowan.hummingbird.db.aggr.Max;
 import com.duowan.hummingbird.db.aggr.Min;
 import com.duowan.hummingbird.db.aggr.OrderFirstRow;
 import com.duowan.hummingbird.db.aggr.Sum;
+import com.duowan.hummingbird.db.aggr.bloomfilter.CountDistinctProvider;
+import com.duowan.hummingbird.db.aggr.bloomfilter.HyperLogLogCountDistinct;
 
 public class AggrFunctionRegister {
 

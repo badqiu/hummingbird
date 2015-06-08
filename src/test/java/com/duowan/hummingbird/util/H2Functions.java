@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.h2.value.ValueJavaObject;
 
-import com.duowan.common.beanutils.PropertyUtils;
+import com.github.rapid.common.beanutils.PropertyUtils;
 
 /**
  * 

@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import com.duowan.hummingbird.db.aggr.BaseCountDistinct;
 import com.duowan.hummingbird.db.aggr.BloomFilterCountDistinct;
-import com.duowan.hummingbird.db.aggr.HyperLogLogCountDistinct;
+import com.duowan.hummingbird.db.aggr.bloomfilter.HyperLogLogCountDistinct;
 
 public class CountDistinctTest {
 

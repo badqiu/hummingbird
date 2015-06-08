@@ -16,10 +16,10 @@ import org.mvel2.MVEL;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import com.duowan.common.redis.JedisPoolFactoryBean;
-import com.duowan.common.redis.RedisTemplate;
-import com.duowan.common.util.Profiler;
 import com.duowan.hummingbird.util.RedisUtils;
+import com.github.rapid.common.redis.JedisPoolFactoryBean;
+import com.github.rapid.common.redis.RedisTemplate;
+import com.github.rapid.common.util.Profiler;
 
 public class RedisTest {
 

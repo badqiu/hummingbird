@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.duowan.hummingbird.db.aggr.AggrFunction;
-import com.duowan.hummingbird.db.aggr.CountDistinctProvider;
+import com.duowan.hummingbird.db.aggr.bloomfilter.CountDistinctProvider;
 import com.duowan.hummingbird.db.sql.select.AggrFunctionRegister;
 import com.duowan.hummingbird.db.sql.select.SelectSql;
 import com.duowan.hummingbird.util.MVELUtil;

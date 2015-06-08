@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.duowan.hummingbird</groupId>
+	<groupId>com.github.hummingbird</groupId>
 	<artifactId>hummingbird</artifactId>
 	<version>0.0.12-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -35,6 +35,16 @@
   					<version>2.8.0-SNAPSHOT</version>
 			</dependency>
 			 -->
+			<dependency>
+				<groupId>com.github.hummingbird</groupId>
+				<artifactId>distinct-client</artifactId>
+				<version>0.0.12-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.hummingbird</groupId>
+				<artifactId>distinct-api</artifactId>
+				<version>0.0.12-SNAPSHOT</version>
+			</dependency>
 			
 			<dependency>
 				<groupId>com.github.rapid.common</groupId>

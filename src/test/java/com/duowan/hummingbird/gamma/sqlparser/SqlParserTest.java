@@ -7,7 +7,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.mvel2.MVEL;
 
-import com.duowan.common.util.Profiler;
+import com.github.rapid.common.util.Profiler;
 
 public class SqlParserTest {
 

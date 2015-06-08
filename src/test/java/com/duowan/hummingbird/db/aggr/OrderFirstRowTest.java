@@ -9,8 +9,6 @@ import org.junit.Test;
 
 import com.duowan.hummingbird.TestData;
 import com.duowan.hummingbird.db.BirdDatabase;
-import com.duowan.realtime.computing.HyperLogLogClient;
-import com.yy.distinctservice.client.BloomFilterClientProvider;
 
 public class OrderFirstRowTest {
 
@@ -18,10 +16,6 @@ public class OrderFirstRowTest {
 	
 	@Before
 	public void before() throws Exception {
-		CountDistinctProviderImpl provider = new CountDistinctProviderImpl();
-		provider.setBloomFilterClient(new BloomFilterClientProvider());
-		provider.setHyperLogLogClient(new HyperLogLogClient());
-		BirdDatabase.setCountDistinctProvider(provider);
 		
 		db.insert("user", Arrays.asList(TestData.getTestDatas(10)));
 		db.insert("dim_user", Arrays.asList(TestData.getTestDatas(20,"diy_key","diy_value")));

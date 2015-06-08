@@ -11,14 +11,14 @@ import java.util.Map;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang.time.DateUtils;
 
-import com.duowan.common.util.DateConvertUtils;
+import com.github.rapid.common.util.DateConvertUtil;
 
 public class TestData {
 
 	public static  Map[] getTestDatas(int count,String... keyValuePairs) {
 		List<Map> rows = new ArrayList();
 		
-		Date dt = DateConvertUtils.parse("1999-1-1", "yyyy-MM-dd");
+		Date dt = DateConvertUtil.parse("1999-1-1", "yyyy-MM-dd");
 		for(int i = 0; i < count; i++) {
 			Map row = new HashMap();
 			row.put("id", i);
