@@ -29,7 +29,7 @@ import com.github.rapid.common.util.DateConvertUtil;
  *      col2 String (必填) bloomfilterName 如：history
  *      col3 String (必填) bloomfilter partition 如：hash(game)、game、extract(parse('20141121', 'yyyyMMdd'), 'yyyyMMdd') 等  列需要在group by中
  *     
- * 函数原型：  Integer bf_count_distinct(String column,String bloomfilterVhost,String bloomfilterName,bfPartition)
+ * 函数原型：  Integer bf_count_distinct(String distinct_column,String bloomfilterVhost,String bloomfilterName,bloomfilterPartition)
  * 
  * 返回值：
 {distinct_count=2, game_server=s2, sum_dur=8.0, game=as}
@@ -41,7 +41,7 @@ import com.github.rapid.common.util.DateConvertUtil;
  * 使用例子：
  	    select 
  	    	game,game_server, sum(dur),
- 	    	bf_count_distinct(passport,'test_db_01','minute_bf',format(parse('20141121','yyyyMMdd'),'yyyyMMdd')) as distinct_count 
+ 	    	bf_count_distinct(passport,'demo_vhost','minute_bf',format(parse('20141121','yyyyMMdd'),'yyyyMMdd')) as distinct_count 
  	    from user   
  	    group by extract(parse('20141121','yyyyMMdd'),'yyyyMMdd'),game,game_server
  * 
@@ -50,25 +50,26 @@ import com.github.rapid.common.util.DateConvertUtil;
  */
 public class BloomFilterCountDistinct extends BaseCountDistinct{
 
-	private BloomFilterDB db = new BloomFilterDB("/data2/abc");
+//	private BloomFilterDB db = new BloomFilterDB("/data2/bloomfilter/local_cache");
 	
 	public BloomFilterCountDistinct() {
 	}
 	
 	@Override
 	public int distinctByHistory(List groupBy,Collection localDistinctedValues,Object[] params) {
-		Assert.notEmpty(params,"bloomFilterName must be not empty");
-		String bloomFilterName = (String)params[0];
-		Assert.hasText(bloomFilterName,"bloomFilterName must be not empty");
-		
-		String group = StringUtils.join(groupBy,"/");
-		
-		Date groupDateValue = findDateValue(groupBy);
-		
-		String partition = "" + DateConvertUtil.format(groupDateValue, "yyyyMMdd");
-		
-		BloomFilter bf = db.get(bloomFilterName, partition);
-		return bf.notContainsCountAndAdd(group,localDistinctedValues);
+//		Assert.notEmpty(params,"bloomFilterName must be not empty");
+//		String bloomFilterName = (String)params[0];
+//		Assert.hasText(bloomFilterName,"bloomFilterName must be not empty");
+//		
+//		String group = StringUtils.join(groupBy,"/");
+//		
+//		Date groupDateValue = findDateValue(groupBy);
+//		
+//		String partition = "" + DateConvertUtil.format(groupDateValue, "yyyyMMdd");
+//		
+//		BloomFilter bf = db.get(bloomFilterName, partition);
+//		return bf.notContainsCountAndAdd(group,localDistinctedValues);
+		throw new UnsupportedOperationException("not yet implement");
 	}
 
 	private static Date findDateValue(List groupBy) {
