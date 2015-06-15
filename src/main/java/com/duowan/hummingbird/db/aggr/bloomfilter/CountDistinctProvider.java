@@ -13,7 +13,7 @@ public interface CountDistinctProvider {
 	 * @param values
 	 * @return
 	 */
-	public Map<String,Integer> bloomFilterNotContainsCountAndAdd(String bloomfilterVhost,String bloomfilterName,List<BloomFilterRequest> querys);
+	public Map<String,Integer> bloomFilterNotContainsCountAndAdd(String bloomfilterName,List<BloomFilterRequest> querys);
 
 	
 //	public Map<String, List<DistinctData>> bloomFilterNotContainsCountAndAddAndReturnExt(String bloomfilterDb,String bloomfilterGroup,List<DistinctRequest> querys);

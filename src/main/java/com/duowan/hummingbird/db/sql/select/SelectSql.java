@@ -470,6 +470,7 @@ public class SelectSql {
 	
 	private static Map<String,SelectSql> sqlCache = new LRUMap(20000);
 	public static SelectSql parse(String querySql) {
+		Assert.hasText(querySql,"querySql must be not blank");
 		try {
 			SelectSql result = sqlCache.get(querySql);
 			if(result == null) {

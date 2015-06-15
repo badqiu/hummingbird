@@ -71,6 +71,10 @@ public class BirdDatabase {
 		getLock(table).unlock();
 	}
 	
+	public void merge(BirdDatabase db) {
+		this.db.putAll(db.db);
+	}
+	
 	private ReentrantLock getLock(String table) {
 		ReentrantLock lock = tableLock.get(table);
 		if(lock == null) {

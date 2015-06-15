@@ -11,9 +11,9 @@ public class CountDistinctProviderImpl implements CountDistinctProvider {
 	private DistinctServiceClient distinctServiceClient;
 	
 	@Override
-	public Map<String,Integer> bloomFilterNotContainsCountAndAdd(String bloomfilterVhost,String bloomfilterName,List<BloomFilterRequest>  querys) {
+	public Map<String,Integer> bloomFilterNotContainsCountAndAdd(String bloomfilterName,List<BloomFilterRequest>  querys) {
 		try {
-			return distinctServiceClient.batchBloomFilterNotContainsCountAndAdd(querys,bloomfilterVhost,bloomfilterName);
+			return distinctServiceClient.batchBloomFilterNotContainsCountAndAdd(querys,bloomfilterName);
 		} catch (Exception e) {
 			throw new RuntimeException("notContainsCountAndAdd() error",e);
 		} 

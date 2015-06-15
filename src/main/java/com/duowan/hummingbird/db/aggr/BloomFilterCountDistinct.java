@@ -24,12 +24,10 @@ import com.github.rapid.common.util.DateConvertUtil;
  * 描述：返回各分组按字段排序后 （第一or最后）相应的同一记录的若干字段
  * 
  * 参数说明：
- *      col0 String (必填) distinct column 如passport ，mid 等需要去重的列 
- *      col1 String (必填) bloomfilterVhost如：default
- *      col2 String (必填) bloomfilterName 如：history
- *      col3 String (必填) bloomfilter partition 如：hash(game)、game、extract(parse('20141121', 'yyyyMMdd'), 'yyyyMMdd') 等  列需要在group by中
- *     
- * 函数原型：  Integer bf_count_distinct(String distinct_column,String bloomfilterVhost,String bloomfilterName,bloomfilterPartition)
+ *      distinct_column (必填) distinct column 如passport ，mid 等需要去重的列 
+ *      bloomfilterName (必填) bloomfilterName 如：history
+ *      bloomfilterPartition (必填) bloomfilter partition 如：hash(game)、game、extract(parse('20141121', 'yyyyMMdd'), 'yyyyMMdd') 等  列需要在group by中
+ * 函数  Integer bf_count_distinct(String distinct_column,String bloomfilterName,bloomfilterPartition)
  * 
  * 返回值：
 {distinct_count=2, game_server=s2, sum_dur=8.0, game=as}
@@ -83,28 +81,26 @@ public class BloomFilterCountDistinct extends BaseCountDistinct{
 	
 	@Override
 	public Map<GroupByValue, Object> execByBatch(Map<GroupByValue, List<Map>> groupByParam,Object[] params) {
-		if(ObjectUtils.isEmpty(params)  || params.length<4) {
-			throw new RuntimeException("miss aggr params error,usage bf_count_distinct(<distinctKey> ,<bfVhost> ,<bfName> ,<bfPartition> )");
+		if(ObjectUtils.isEmpty(params)  || params.length < 3) {
+			throw new RuntimeException("miss aggr params error,usage bf_count_distinct(<distinctKey> ,<bfName> ,<bfPartition> )");
 		}
 		// 参数，支持表达式,不修改原来的实现逻辑
 		String distinctColumnExpr = (String) params[0];
-		String bloomfilterVhostExpr =(String)params[1] ; 
-		String bloomfilterGroupExpr =(String)params[2] ; 
-		String partitionExpr = (String) params[3];
+		String bloomfilterGroupExpr =(String)params[1] ; 
+		String partitionExpr = (String) params[2];
 		
 		// group 支持方法获取，但不从数据中获取
-		String bloomfilterVhost = (String)MVELUtil.eval( bloomfilterVhostExpr, new HashMap());
 		String bloomfilterName = (String)MVELUtil.eval( bloomfilterGroupExpr, new HashMap());
 		
-		return execByBatch(groupByParam, distinctColumnExpr, partitionExpr,bloomfilterVhost, bloomfilterName);
+		return execByBatch(groupByParam, distinctColumnExpr, partitionExpr, bloomfilterName);
 	}
 
 	private Map<GroupByValue, Object> execByBatch(
 			Map<GroupByValue, List<Map>> groupByParam,
 			String distinctColumnExpr, String partitionExpr,
-			String bloomfilterVhost, String bloomfilterName) {
+			String bloomfilterName) {
 		List<BloomFilterRequest> bfGroupQuery = toBloomFilterRequest(partitionExpr, distinctColumnExpr, groupByParam);
-		Map<String,Integer> resultMap = AggrFunctionRegister.getInstance().getCountDistinctProvider().bloomFilterNotContainsCountAndAdd(bloomfilterVhost,bloomfilterName, bfGroupQuery );
+		Map<String,Integer> resultMap = AggrFunctionRegister.getInstance().getCountDistinctProvider().bloomFilterNotContainsCountAndAdd(bloomfilterName, bfGroupQuery );
 		return mapping2Result(groupByParam, resultMap);
 	}
 	

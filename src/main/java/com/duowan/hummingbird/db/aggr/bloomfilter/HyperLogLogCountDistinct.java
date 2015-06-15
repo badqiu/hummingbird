@@ -11,7 +11,8 @@ public class HyperLogLogCountDistinct extends BaseCountDistinct{
 	@Override
 	public int distinctByHistory(List groupBy,
 			Collection localDistinctedValues, Object[] params) {
-		return 0;
+//		return 0;
+		throw new RuntimeException("not yet impl");
 	}
 
 //	@Override

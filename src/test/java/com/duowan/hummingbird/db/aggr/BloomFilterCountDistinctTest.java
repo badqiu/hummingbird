@@ -21,6 +21,7 @@ public class BloomFilterCountDistinctTest {
 		CountDistinctProviderImpl provider = new CountDistinctProviderImpl();
 		DistinctServiceClient bloomFilterClient = new DistinctServiceClient();
 		bloomFilterClient.setHost("localhost");
+		bloomFilterClient.setVhost("default_vhost");
 		bloomFilterClient.afterPropertiesSet();
 //		MetaStoreWebService metaStoreWebService = Mockito.mock(MetaStoreWebService.class);
 //		Mockito.when(metaStoreWebService.getServerIp(Mockito.anyString())).thenReturn("127.0.0.1") ; 
@@ -38,8 +39,9 @@ public class BloomFilterCountDistinctTest {
 		printRows(db.select("select * from user "));
 		//order_first_row for date compare
 		System.out.println(" --- bf_count_distinct --- ");
-		printRows(db.select("select game,game_server, sum(dur),bf_count_distinct(passport,'test_db_01','minute',format(parse('20141121','yyyyMMdd'),'yyyyMMdd')) as distinct_count from user   group by  'sum_new_user_ucnt',extract(parse('1970-01-01', 'yyyy-MM-dd'),'yyyyMMdd'),game,game_server"));
-		printRows(db.select("select game,game_server,count(dur),sum(dur),bf_count_distinct(passport,'test_db_01','minute',format(stime,'yyyyMMdd')) as distinct_count,cardinality_offer(passport,'day') from user where game != 'as' group by format(stime,'yyyyMMdd'),game,game_server"));
+		printRows(db.select("select game,game_server, sum(dur),bf_count_distinct(passport,'minute_bf',format(parse('20141121','yyyyMMdd'),'yyyyMMdd')) as distinct_count from user   group by  'sum_new_user_ucnt',extract(parse('1970-01-01', 'yyyy-MM-dd'),'yyyyMMdd'),game,game_server"));
+		System.out.println(" --- bf_count_distinct --- ");
+		printRows(db.select("select game,game_server,count(dur),sum(dur),bf_count_distinct(passport,'minute_bf',format(stime,'yyyyMMdd')) as distinct_count from user where game != 'as' group by format(stime,'yyyyMMdd'),game,game_server"));
 		
 	}
 

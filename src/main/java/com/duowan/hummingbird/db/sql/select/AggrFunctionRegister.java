@@ -10,6 +10,7 @@ import com.duowan.hummingbird.db.aggr.CollectList;
 import com.duowan.hummingbird.db.aggr.CollectMap;
 import com.duowan.hummingbird.db.aggr.CollectSet;
 import com.duowan.hummingbird.db.aggr.Count;
+import com.duowan.hummingbird.db.aggr.CountDistinct;
 import com.duowan.hummingbird.db.aggr.Max;
 import com.duowan.hummingbird.db.aggr.Min;
 import com.duowan.hummingbird.db.aggr.OrderFirstRow;
@@ -32,6 +33,7 @@ public class AggrFunctionRegister {
 		aggrFunctionMap.put("order_first_row", new OrderFirstRow());
 		aggrFunctionMap.put("cardinality_offer", new HyperLogLogCountDistinct());
 		aggrFunctionMap.put("bf_count_distinct", new BloomFilterCountDistinct());
+		aggrFunctionMap.put("count_distinct", new CountDistinct());
 		aggrFunctionMap.put("count", new Count());
 		aggrFunctionMap.put("sum", new Sum());
 		aggrFunctionMap.put("min", new Min());
