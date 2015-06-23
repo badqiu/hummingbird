@@ -8,6 +8,7 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
+import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.OrderByElement;
@@ -39,10 +40,10 @@ public class SqlParser {
 			SelectBody selectBody = s.getSelectBody();
 			final SelectSql result = parseSelectBody(selectBody);
 			
-			if(StringUtils.isEmpty(result.getInto())) {
-				String into = RegexUtil.findByRegexGroup(query, "(?i)into\\s+([\\w_]+)", 1);
-				result.setInto(into);
-			}
+//			if(StringUtils.isEmpty(result.getInto())) {
+//				String into = RegexUtil.findByRegexGroup(query, "(?i)into\\s+([\\w_]+)", 1);
+//				result.setInto(into);
+//			}
 			return result;
 		}else {
 			throw new RuntimeException("only parse select sql,current sql:"+query);
@@ -70,7 +71,20 @@ public class SqlParser {
 				result.setHaving(plainSelect.getHaving() == null ? null : plainSelect.getHaving().toString());
 				
 //				Expression expr = plainSelect.getWhere();
-				result.setInto(plainSelect.getInto() == null ? null : plainSelect.getInto().getName());
+				String into = toInto(plainSelect.getIntoTables());
+				result.setInto(into);
+			}
+
+
+
+			private String toInto(List<Table> intoTables) {
+				if(intoTables == null) return null;
+				
+				List<String> result = new ArrayList<String>();
+				for(Table t : intoTables) {
+					result.add(t.getName());
+				}
+				return StringUtils.join(result,",");
 			}
 
 

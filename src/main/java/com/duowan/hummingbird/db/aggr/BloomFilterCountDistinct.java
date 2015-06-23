@@ -110,15 +110,14 @@ public class BloomFilterCountDistinct extends BaseCountDistinct{
 			GroupByValue key = entry.getKey();
 			List<Map> values = entry.getValue();
 			String group = StringUtils.join(key.list,"/");
-			BloomFilterRequest request = newBloomFilterRequest(partitionColumn,distinctColumn, values, group);
+			BloomFilterRequest request = newBloomFilterRequest(partitionColumn,distinctColumn, values,group);
 			resultList.add(request);
 		}
 		return resultList;
 	}
 
 	private static BloomFilterRequest newBloomFilterRequest(
-			String partitionColumn, String distinctColumn, List<Map> values,
-			String group) {
+			String partitionColumn, String distinctColumn, List<Map> values,String group) {
 		BloomFilterRequest request = new BloomFilterRequest();
 		
 		String partition = getBloomFilterPartition(partitionColumn, values, request);

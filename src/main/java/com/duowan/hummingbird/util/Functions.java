@@ -27,4 +27,17 @@ public class Functions {
 		return DateConvertUtil.parse(dateString, "yyyy-MM-dd HH:mm:ss");
 	}
 	
+	
+	public static Object ifnull(Object val ,Object defaultValue) {
+		if(val == null) return defaultValue;
+		return val;
+	}
+	
+	public static Object IF(boolean val ,Object trueValue,Object falseValue) {
+		if(val) 
+			return trueValue;
+		else
+			return falseValue;
+	}
+	
 }
