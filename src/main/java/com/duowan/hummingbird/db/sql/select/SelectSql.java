@@ -208,13 +208,11 @@ public class SelectSql {
 			for(Map row : wheredRows) {
 				Map map = new HashMap();
 				for(SelectItem item : selectItems) {
-					Object value = item.execSelect(row);
 					if(item.allTableColumns) {
 						map.putAll((Map)row);
 						continue;
 					}
-
-					
+					Object value = item.execSelect(row);
 					if(StringUtils.isEmpty(item.getAlias())) {
 						map.put(item.getExpr(),value);
 					}else {
@@ -353,11 +351,11 @@ public class SelectSql {
 				if(item.isAggrFunction()) {
 					Map<GroupByValue,Object> funcResult = aggrFunctionsResult.get(item);
 					Object value = funcResult.get(gbv);
-					String alias = StringUtils.defaultIfBlank(item.getAlias(), item.getFunc()+"_"+item.getParams()[0]);
+					String alias = defaultIfBlank(item.getAlias(), item.getFunc()+"_"+item.getParams()[0]);
 					itemGroupByResult.put(alias,value);
 				}else {
 					Object value = MVELUtil.eval(item.getExpr(), groupByValueMap);
-					String alias = StringUtils.defaultIfBlank(item.getAlias(), item.getExpr());
+					String alias = defaultIfBlank(item.getAlias(), item.getExpr());
 					itemGroupByResult.put(alias, value);
 				}
 			}
@@ -366,6 +364,11 @@ public class SelectSql {
 		Profiler.release();
 		
 		return result;
+	}
+
+	public static String defaultIfBlank(String str,String defaultStr) {
+		if(StringUtils.isBlank(str)) return defaultStr;
+		return str;
 	}
 
 	private Map<SelectItem, Map> execForAggrFunctionsResult(

@@ -28,6 +28,7 @@ public class MVELUtil {
 		methods.putAll(getPublicStaticMethods(StringUtils.class));
 		methods.putAll(getPublicStaticMethods(Functions.class));
 		methods.putAll(getPublicStaticMethods(System.class));
+		methods.putAll(getPublicStaticMethods(org.apache.commons.lang.math.NumberUtils.class));
 	}
 	
 	public static Serializable getMVELCompileExpression(String expr) {

@@ -39,7 +39,7 @@ import com.github.rapid.common.util.DateConvertUtil;
  * 使用例子：
  	    select 
  	    	game,game_server, sum(dur),
- 	    	bf_count_distinct(passport,'demo_vhost','minute_bf',format(parse('20141121','yyyyMMdd'),'yyyyMMdd')) as distinct_count 
+ 	    	bf_count_distinct(passport,'minute_bf',format(parse('20141121','yyyyMMdd'),'yyyyMMdd')) as distinct_count 
  	    from user   
  	    group by extract(parse('20141121','yyyyMMdd'),'yyyyMMdd'),game,game_server
  * 
