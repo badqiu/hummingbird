@@ -5,6 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jsqlparser.expression.CaseExpression;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.WhenClause;
+import net.sf.jsqlparser.expression.operators.relational.InExpression;
+import net.sf.jsqlparser.statement.select.SelectExpressionItem;
+
 import org.apache.commons.lang.StringUtils;
 import org.mvel2.MVEL;
 
@@ -26,6 +32,7 @@ public class SelectItem {
 	
 	boolean allTableColumns = false; // 代表选择所有*号
 	
+	private SelectExpressionItem selectExpressionItem;
 
 	public String getAlias() {
 		return alias;
@@ -93,7 +100,40 @@ public class SelectItem {
 	
 	
 	public Object execSelect(Map row) {		
+		if(selectExpressionItem.getExpression() instanceof CaseExpression) {
+			return evalCaseWhenExpr((CaseExpression)selectExpressionItem.getExpression(),row);
+		}else if(selectExpressionItem.getExpression() instanceof InExpression) {
+			return evalInExpr((InExpression)selectExpressionItem.getExpression(),row);
+		}
 		return MVELUtil.eval(getExpr(),row); //TODO 需要性能优化
+	}
+
+	private Object evalInExpr(InExpression expr, Map row) {
+		throw new RuntimeException("unsupport in() expr:"+expr);
+	}
+
+	private Object evalCaseWhenExpr(CaseExpression expr, Map row) {
+		for(Expression whenExpr : expr.getWhenClauses()) {
+			WhenClause when = (WhenClause)whenExpr;
+			if(evalBoolean(when.getWhenExpression(),row)) {
+				return eval(when.getThenExpression(),row);
+			}
+		}
+		return eval(expr.getElseExpression(),row);
+	}
+
+	private Boolean evalBoolean(Expression expr, Map row) {
+		if(expr == null) return false;
+		try {
+			return (Boolean)MVELUtil.eval(MVELUtil.sqlWhere2MVELExpression(expr.toString()),row);
+		}catch(Exception e) {
+			throw new RuntimeException("evalBoolean error,expr:"+expr+" data:"+row,e);
+		}
+	}
+	
+	private Object eval(Expression expr, Map row) {
+		if(expr == null) return false;
+		return MVELUtil.eval(expr.toString(),row);
 	}
 
 	public static List<Object> extractValuesByMVEL(List<Map> rows,String[] columns) {
@@ -148,6 +188,10 @@ public class SelectItem {
 
 	public boolean isAggrFunction() {
 		return aggrFunctionRegister.isAggrFunction(func);
+	}
+
+	public void setExpr(SelectExpressionItem selectExpressionItem) {
+		this.selectExpressionItem = selectExpressionItem;
 	}
 
 }

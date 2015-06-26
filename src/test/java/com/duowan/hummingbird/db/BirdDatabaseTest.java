@@ -91,6 +91,15 @@ public class BirdDatabaseTest {
 	}
 	
 	@Test
+	public void case_when() throws Exception {
+		List<Map> rows = db.select("select case when game='ddt' then '弹弹堂' when game='as' then '傲视' else game end  as game_name from user");
+		printRows(rows);
+		assertContains(rows,"game_name","弹弹堂");
+		assertContains(rows,"game_name","傲视");
+		assertContains(rows,"game_name","hz");
+	}
+	
+	@Test
 	public void subSelect() throws Exception {
 		List<Map> rows = db.select("select diy_key,id,'sub select' subselect,game,game_server,dur,passport from (select id,stime,game,game_server,dur,passport from user) t inner join (select * from dim_user) t1 on t.game=t1.game  order by id asc limit 2,3");
 		printRows(rows);

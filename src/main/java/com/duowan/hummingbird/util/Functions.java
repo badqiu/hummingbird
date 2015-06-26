@@ -21,6 +21,12 @@ public class Functions {
 		return false;
 	}
 	
+	/**
+	 * 对分钟进行取整操作
+	 * @param date
+	 * @param num
+	 * @return
+	 */
 	public static Date roundMinute(Date date,int num) {
 		int roundedMinute = date.getMinutes() / num * num;
 		String dateString = DateConvertUtil.format(date, "yyyy-MM-dd HH:") + roundedMinute + ":00";

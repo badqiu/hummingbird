@@ -109,6 +109,7 @@ public class SqlParser {
 									selectItem.setParams(params.toArray(new String[0]));
 								}
 							});
+							selectItem.setExpr(selectExpressionItem);
 							selectItem.setExpr(selectExpressionItem.getExpression().toString());
 							selectItem.setAlias(selectExpressionItem.getAlias() == null ? null : selectExpressionItem.getAlias().getName());
 							selectItems.add(selectItem);
