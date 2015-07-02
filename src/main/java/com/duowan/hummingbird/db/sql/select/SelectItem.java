@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.jsqlparser.expression.CaseExpression;
 import net.sf.jsqlparser.expression.Expression;
@@ -108,8 +109,12 @@ public class SelectItem {
 		return MVELUtil.eval(getExpr(),row); //TODO 需要性能优化
 	}
 
-	private Object evalInExpr(InExpression expr, Map row) {
-		throw new RuntimeException("unsupport in() expr:"+expr);
+	private Boolean evalInExpr(InExpression expr, Map row) {
+//		expr.getLeftExpression()
+//		Set rightValues = evalRightExpr();
+//		Object leftValue = eval(expr.getLeftExpression(),row);
+//		return rightValues.contains(leftValue);
+		throw new RuntimeException("unsupport,expr:"+expr+" data:"+row);
 	}
 
 	private Object evalCaseWhenExpr(CaseExpression expr, Map row) {
@@ -132,7 +137,7 @@ public class SelectItem {
 	}
 	
 	private Object eval(Expression expr, Map row) {
-		if(expr == null) return false;
+		if(expr == null) return null;
 		return MVELUtil.eval(expr.toString(),row);
 	}
 

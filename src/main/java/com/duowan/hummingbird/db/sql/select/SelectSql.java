@@ -245,8 +245,7 @@ public class SelectSql {
 		if(StringUtils.isBlank(where)) {
 			return rows;
 		}
-		String replacedWhere = MVELUtil.sqlWhere2MVELExpression(where) 
-				;
+		String replacedWhere = MVELUtil.sqlWhere2MVELExpression(where);
 		List<Map> result = new ArrayList<Map>();
 		for(Map row : rows) {
 			Boolean r = (Boolean)MVELUtil.eval(replacedWhere, row);//TODO 此处可以性能优化,避免需要多次 eval

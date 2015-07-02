@@ -31,6 +31,10 @@ public class TestData {
 			row.put("passport", i % 100);
 			row.put("dur", i % 1000);
 			row.put("keynull", null);
+			row.put("num", i);
+			row.put("str_num", ""+i);
+			row.put("money", ""+(i-3));
+			row.put("account_id", "account_"+i);
 			
 			Map ext = new HashMap();
 			ext.put("ext_key", "ext_value_"+i % 3);

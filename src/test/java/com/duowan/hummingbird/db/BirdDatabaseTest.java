@@ -92,11 +92,13 @@ public class BirdDatabaseTest {
 	
 	@Test
 	public void case_when() throws Exception {
-		List<Map> rows = db.select("select case when game='ddt' then '弹弹堂' when game='as' then '傲视' else game end  as game_name from user");
+		List<Map> rows = db.select("select case when game='ddt' then '弹弹堂' when game='as' then '傲视' else game end  as game_name, case when toDouble(str_num) > 5 then num else null end gt5_num,str_num  from user");
 		printRows(rows);
 		assertContains(rows,"game_name","弹弹堂");
 		assertContains(rows,"game_name","傲视");
 		assertContains(rows,"game_name","hz");
+		rows = db.select("select toDouble(money) recharge,case when toDouble(money) > 0 then account_id else null end recharge_account_id into ods_app from user");
+		printRows(rows);
 	}
 	
 	@Test

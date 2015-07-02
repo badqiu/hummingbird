@@ -11,6 +11,7 @@ public class AnySqlTest {
 
 	@Test
 	public void testUse() throws JSQLParserException {
+		System.out.println((Integer.MAX_VALUE / 1024 / 1024) + "mb");
 		CCJSqlParserManager pm = new CCJSqlParserManager();
 		net.sf.jsqlparser.statement.Statement stmt = pm.parse(new StringReader("use abc"));
 		System.out.println("stmt:"+stmt);
