@@ -33,7 +33,11 @@ public class BirdDatabaseTest {
 	@Before
 	public void before() throws Exception {
 		CountDistinctProviderImpl provider = new CountDistinctProviderImpl();
-		provider.setDistinctServiceClient(new DistinctServiceClient());
+		DistinctServiceClient bloomFilterClient = new DistinctServiceClient();
+		bloomFilterClient.setVhost("test");
+		bloomFilterClient.setHost("localhost");
+		bloomFilterClient.afterPropertiesSet();
+		provider.setDistinctServiceClient(bloomFilterClient);
 //		provider.setHyperLogLogClient(new HyperLogLogClient());
 		BirdDatabase.setCountDistinctProvider(provider);
 		
@@ -43,7 +47,9 @@ public class BirdDatabaseTest {
 	
 	@Test
 	public void test() throws Exception {
-		printRows(db.select("select game,game_server,count(dur),sum(dur),bf_count_distinct('test_db_01','day',format(stime,'yyyyMMdd'),passport) as distinct_count,cardinality_offer(passport,'day') from user where game != 'as' group by format(stime,'yyyyMMdd'),game,game_server"));
+		db.insert("user", Arrays.asList(TestData.getTestDatas(1000)));
+		printRows(db.select("select game,game_server,passport from user group by game,game_server,passport"));
+		printRows(db.select("select format(stime,'yyyyMMdd') stime,game,game_server,count(dur),sum(dur),bf_count_distinct(game+passport,'day',format(stime,'yyyyMMdd')) as distinct_count from user where game != 'as' group by format(stime,'yyyyMMdd'),game,game_server"));
 //		printRows(db.select("select count(dur),sum(dur),cardinality_offer(passport) from user where game != 'as' group by game,game_server"));
 //		printRows(db.select("select diy_key,extract(stime,'yyyyMMdd') as tdate,game,game_server,count(dur),sum(dur) from user u join dim_user du on u.game = du.game where game != 'as' group by diy_key,extract(stime,'yyyyMMdd'),game,game_server having game = 'hz' "));
 //		printRows(db.select("select id,diy_key,extract(stime,'yyyyMMdd') as tdate,game,game_server,dur,passport from user u join dim_user du on u.game = du.game where game != 'as' limit 0,2"));
@@ -52,6 +58,10 @@ public class BirdDatabaseTest {
 //		printRows(db.select("select id,'sub select' subselect,game,game_server,dur,passport from (select id,stime,game,game_server,dur,passport from user) t  order by id asc limit 2,3"));
 	}
 	
+	@Test
+	public void test_cardinality_offer() throws Exception {
+		printRows(db.select("select game,game_server,count(dur),sum(dur),cardinality_offer(passport,'day') from user where game != 'as' group by format(stime,'yyyyMMdd'),game,game_server"));
+	}
 	@Test(expected=CompileException.class)
 	public void method_not_exist() throws Exception {
 		printRows(db.select("select game,game_server,no_exist_method(game) from user where game != 'as' "));
