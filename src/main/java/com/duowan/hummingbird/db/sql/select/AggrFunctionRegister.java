@@ -67,7 +67,7 @@ public class AggrFunctionRegister {
 
 	public CountDistinctProvider getCountDistinctProvider() {
 		if(countDistinctProvider == null) {
-			throw new RuntimeException("countDistinctProvider not yet init");
+			throw new RuntimeException("countDistinctProvider is null,not yet init");
 		}
 		return countDistinctProvider;
 	}

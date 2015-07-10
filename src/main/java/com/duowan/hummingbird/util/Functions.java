@@ -2,6 +2,8 @@ package com.duowan.hummingbird.util;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.github.rapid.common.util.DateConvertUtil;
 
 public class Functions {
@@ -37,6 +39,27 @@ public class Functions {
 	public static Object ifnull(Object val ,Object defaultValue) {
 		if(val == null) return defaultValue;
 		return val;
+	}
+	
+	public static Object ifblank(Object val ,Object defaultValue) {
+		if(isblank(val)) return defaultValue;
+		return val;
+	}
+
+	private static boolean isblank(Object val) {
+		if(val == null) return true;
+		if(val instanceof String && StringUtils.isBlank((String)val)) return true;
+		return false;
+	}
+	
+	public static Object ifnotblank(Object val ,Object defaultValue) {
+		if(!isblank(val)) return defaultValue;
+		return null;
+	}
+	
+	public static Object ifnotnull(Object val ,Object defaultValue) {
+		if(val == null) return null;
+		return defaultValue;
 	}
 	
 	public static Object IF(boolean val ,Object trueValue,Object falseValue) {
