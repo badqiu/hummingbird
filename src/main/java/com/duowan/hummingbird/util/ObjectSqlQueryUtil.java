@@ -1,11 +1,9 @@
 package com.duowan.hummingbird.util;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.DataSource;
 
@@ -18,8 +16,6 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import com.github.rapid.common.util.Profiler;
 
 /**
  * 
@@ -45,29 +41,17 @@ public class ObjectSqlQueryUtil {
 		TransactionTemplate tt = new TransactionTemplate(new DataSourceTransactionManager(ds));
 		return tt.execute(new TransactionCallback<List<Map<String,Object>>>() {
 			public List<Map<String,Object>> doInTransaction(TransactionStatus status) {
-				try {
-					Profiler.enter("createTableAndInsertData");
-					createTableAndInsertData(TABLE_NAME,rows,ds);
-				}finally {
-					Profiler.release();
-				}
-				
+				createTableAndInsertData(TABLE_NAME,rows,ds);
 				final JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+				jdbcTemplate.execute("CREATE AGGREGATE IF NOT EXISTS collect_map FOR \"com.github.reportengine.h2.functions.CollectMapAggrFunction\"");
+				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS map FOR \"com.github.reportengine.h2.functions.H2Functions.string_map\"");
+				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS string_map FOR \"com.github.reportengine.h2.functions.H2Functions.string_map\"");
+				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS number_map FOR \"com.github.reportengine.h2.functions.H2Functions.number_map\"");
+				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS date_map FOR \"com.github.reportengine.h2.functions.H2Functions.date_map\"");
+				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS get_property FOR \"com.github.reportengine.h2.functions.H2Functions.get_property\"");
 				
-//				jdbcTemplate.execute("CREATE AGGREGATE IF NOT EXISTS collect_map FOR \"com.duowan.reportengine.h2.functions.CollectMapAggrFunction\"");
-//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS map FOR \"com.duowan.reportengine.h2.functions.H2Functions.string_map\"");
-//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS string_map FOR \"com.duowan.reportengine.h2.functions.H2Functions.string_map\"");
-//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS number_map FOR \"com.duowan.reportengine.h2.functions.H2Functions.number_map\"");
-//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS date_map FOR \"com.duowan.reportengine.h2.functions.H2Functions.date_map\"");
-//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS get_property FOR \"com.duowan.reportengine.h2.functions.H2Functions.get_property\"");
-				
-				try {
-					Profiler.enter("queryForList");
-					final NamedParameterJdbcTemplate namedJdbcTemplate = new NamedParameterJdbcTemplate(ds);
-					return MapUtil.allMapKey2LowerCase(namedJdbcTemplate.queryForList(sql,params));
-				}finally {
-					Profiler.release();
-				}
+				final NamedParameterJdbcTemplate namedJdbcTemplate = new NamedParameterJdbcTemplate(ds);
+				return MapUtil.allMapKey2LowerCase(namedJdbcTemplate.queryForList(sql,params));
 			}
 		});
 		
@@ -85,12 +69,12 @@ public class ObjectSqlQueryUtil {
 //					createTableAndInsertData(TABLE_NAME+(++count),rows,ds);
 //				}
 //				final JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-//				jdbcTemplate.execute("CREATE AGGREGATE IF NOT EXISTS collect_map FOR \"com.duowan.reportengine.h2.functions.CollectMapAggrFunction\"");
-//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS map FOR \"com.duowan.reportengine.h2.functions.H2Functions.string_map\"");
-//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS string_map FOR \"com.duowan.reportengine.h2.functions.H2Functions.string_map\"");
-//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS number_map FOR \"com.duowan.reportengine.h2.functions.H2Functions.number_map\"");
-//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS date_map FOR \"com.duowan.reportengine.h2.functions.H2Functions.date_map\"");
-//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS get_property FOR \"com.duowan.reportengine.h2.functions.H2Functions.get_property\"");
+//				jdbcTemplate.execute("CREATE AGGREGATE IF NOT EXISTS collect_map FOR \"com.github.reportengine.h2.functions.CollectMapAggrFunction\"");
+//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS map FOR \"com.github.reportengine.h2.functions.H2Functions.string_map\"");
+//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS string_map FOR \"com.github.reportengine.h2.functions.H2Functions.string_map\"");
+//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS number_map FOR \"com.github.reportengine.h2.functions.H2Functions.number_map\"");
+//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS date_map FOR \"com.github.reportengine.h2.functions.H2Functions.date_map\"");
+//				jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS get_property FOR \"com.github.reportengine.h2.functions.H2Functions.get_property\"");
 //				
 //				return MapUtil.allMapKey2LowerCase(jdbcTemplate.queryForList(sql));
 //			}
@@ -104,9 +88,9 @@ public class ObjectSqlQueryUtil {
 		Map row = rows.get(0);
 		String insertSql = buildInsertSql(tableName,row);
 		
-		jdbcTemplate.execute(createTableSql);
 		long start = System.currentTimeMillis();
 		try {
+			jdbcTemplate.execute(createTableSql);
 			new NamedParameterJdbcTemplate(jdbcTemplate).batchUpdate(insertSql, rows.toArray(new Map[rows.size()]));
 		}catch(Exception e) {
 			throw new RuntimeException("error on createTableAndInsertData() createTableSql:"+createTableSql+" insertSql:"+insertSql,e) ;
@@ -117,20 +101,9 @@ public class ObjectSqlQueryUtil {
 		}
 	}
 	
-	private static String buildCreateTableSql(String tableName, List<Map<String, Object>> rows) {
-		for(int i = 0 ; i < rows.size(); i++) {
-			Map row = rows.get(i);
-			try {
-				return buildCreateTableSql(tableName,row,true);
-			}catch(IllegalArgumentException e) {
-				//ignore
-			}
-		}
-		return buildCreateTableSql(tableName,rows.get(0),false);
-	}
-
-	static String buildCreateTableSql(String tableName,Map<String,Object> map,boolean errorOnValueNull) {
-		StringBuilder sql = new StringBuilder("DECLARE LOCAL  TEMPORARY table "+tableName+" (");
+	static String buildCreateTableSql(String tableName, List<Map<String, Object>> rows) {
+		Map<String,Object> map = rows.get(0);
+		StringBuilder sql = new StringBuilder("create memory local temporary  table "+tableName+" (");
 		boolean first = true;
 		for(Map.Entry<String, Object> entry : map.entrySet()) {
 			if(first) {
@@ -139,23 +112,33 @@ public class ObjectSqlQueryUtil {
 				sql.append(",");
 			}
 			String key = entry.getKey();
-			Object value = entry.getValue();
-			if(errorOnValueNull && value == null) {
-				throw new IllegalArgumentException("value is null by key:"+key);
-			}
-			String sqlType = getSqlType(value);
+			String sqlType = getSqlType(rows,key);
 			sql.append(key + " " +sqlType);
-			
 		}
 		
-		return sql.append(" )").toString();
+		return sql.append(" ) NOT PERSISTENT").toString();
+	}
+	
+	private static String getSqlType(List<Map<String,Object>> rows,String key) {
+		for(Map row : rows) {
+			Object value = row.get(key);
+			if(value == null) {
+				continue;
+			}
+			return getSqlType(value);
+		}
+		return getSqlType(null);
 	}
 	
 	private static String getSqlType(Object value) {
 		if(value instanceof String) {
 			return "varchar(4000)";
+		}else if(value instanceof Byte) {
+			return "TINYINT";				
+		}else if(value instanceof Short) {
+			return "SMALLINT";			
 		}else if(value instanceof Integer) {
-			return "BIGINT";
+			return "INT";
 		}else if(value instanceof Long) {
 			return "BIGINT";			
 		}else if(value instanceof Number) {
@@ -201,7 +184,7 @@ public class ObjectSqlQueryUtil {
 		sql.append(" )");
 		return sql.toString();
 	}
-	private static AtomicLong dbCount = new AtomicLong();
+//	private static AtomicLong dbCount = new AtomicLong();
 	private static DataSource getDataSource() {
 		DriverManagerDataSource ds = new DriverManagerDataSource();
 		ds.setDriverClassName("org.h2.Driver");
