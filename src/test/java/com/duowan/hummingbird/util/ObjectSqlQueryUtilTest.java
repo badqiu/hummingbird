@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +25,12 @@ public class ObjectSqlQueryUtilTest {
 		row.put("percent", 12.239);
 		row.put("birth_date", DateConvertUtil.parse("1999.9.9", "yyyy.MM.dd"));
 		
-		String createTableSql = util.buildCreateTableSql("t",row ,false);
+		String createTableSql = util.buildCreateTableSql("t",Arrays.asList(row));
 		String insertSql = util.buildInsertSql("t",row );
 		System.out.println(createTableSql);
 		System.out.println(insertSql);
-		assertEquals("create memory local temporary  table t (username varchar(4000),percent NUMBER,birth_date datetime,age NUMBER )",createTableSql);
-		assertEquals("insert into t (username,percent,birth_date,age ) values (:username,:percent,:birth_date,:age )",insertSql);
+		assertEquals("create memory local temporary  table t (birth_date datetime,percent DOUBLE,age INT,username varchar(4000) ) NOT PERSISTENT",createTableSql);
+		assertEquals("insert into t (birth_date,percent,age,username ) values (:birth_date,:percent,:age,:username )",insertSql);
 	}
 	
 	@Test
