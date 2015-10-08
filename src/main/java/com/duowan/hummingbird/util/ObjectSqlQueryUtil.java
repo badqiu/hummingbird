@@ -184,14 +184,12 @@ public class ObjectSqlQueryUtil {
 		sql.append(" )");
 		return sql.toString();
 	}
-//	private static AtomicLong dbCount = new AtomicLong();
 	private static DataSource getDataSource() {
 		DriverManagerDataSource ds = new DriverManagerDataSource();
 		ds.setDriverClassName("org.h2.Driver");
 		ds.setPassword("sa");
 		ds.setPassword("");
-//		ds.setUrl("jdbc:h2:mem:object_sql_query"+(dbCount.incrementAndGet())+";MODE=MYSQL");
-		ds.setUrl("jdbc:h2:mem:object_sql_query;MODE=MYSQL;DB_CLOSE_DELAY=-1");
+		ds.setUrl("jdbc:h2:mem:object_sql_query;MODE=MYSQL;DB_CLOSE_DELAY=-1;LOG=0;LOCK_MODE=0;UNDO_LOG=0;CACHE_SIZE=65536;MULTI_THREADED=1");
 		return ds;
 	}
 }
