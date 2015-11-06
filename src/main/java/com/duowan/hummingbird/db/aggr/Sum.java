@@ -28,18 +28,22 @@ public class Sum extends BaseAggrFunction implements AggrFunction{
 	}
 
 	private static double toNumber(Object v) {
-		if(v == null) {
+		try {
+			if(v == null) {
+				return 0;
+			}
+			double num = 0;
+			if(v instanceof Number) {
+				num = ((Number)v).doubleValue();
+			}else if (v instanceof String) {
+				num = string2Number((String)v);
+			}else {
+				num = string2Number(v.toString());
+			}
+			return num;
+		}catch(Exception e) {
 			return 0;
 		}
-		double num = 0;
-		if(v instanceof Number) {
-			num = ((Number)v).doubleValue();
-		}else if (v instanceof String) {
-			num = string2Number((String)v);
-		}else {
-			num = string2Number(v.toString());
-		}
-		return num;
 	}
 
 	private static double string2Number(Object v) {
