@@ -3,6 +3,8 @@ package com.duowan.hummingbird.db.aggr;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.duowan.hummingbird.util.MVELUtil;
 
 public class Sum extends BaseAggrFunction implements AggrFunction{
@@ -33,11 +35,19 @@ public class Sum extends BaseAggrFunction implements AggrFunction{
 		if(v instanceof Number) {
 			num = ((Number)v).doubleValue();
 		}else if (v instanceof String) {
-			num = Double.parseDouble((String)v);
+			num = string2Number((String)v);
 		}else {
-			num = Double.parseDouble((String)v.toString());
+			num = string2Number(v.toString());
 		}
 		return num;
+	}
+
+	private static double string2Number(Object v) {
+		String strValue = (String)v;
+		if(StringUtils.isBlank(strValue)) {
+			return 0;
+		}
+		return  Double.parseDouble((String)v);
 	}
 
 }
