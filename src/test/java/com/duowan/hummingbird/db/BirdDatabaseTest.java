@@ -72,6 +72,17 @@ public class BirdDatabaseTest {
 		assertEquals(7,printRows(db.select("select game,game_server from user where cin(game,'as','ddt')")).size());
 	}
 	
+	
+	@Test
+	public void test_to_double() {
+		List<Map> rows = db.select("select toDouble('abc') num from user");
+		printRows(rows);
+		assertContains(rows,"num",0.0);
+		
+		rows = printRows(db.select("select case when toDouble(money) > 0 then money else 0 end num from user"));
+	
+	}
+	
 	@Test
 	public void where() throws Exception {
 		List<Map> rows = db.select("select * from user where game != 'as' and dur>5 and game!='ddt'");
