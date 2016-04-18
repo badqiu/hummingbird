@@ -1,6 +1,8 @@
 package com.duowan.hummingbird.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 
@@ -15,6 +17,22 @@ public class MVELUtilTest {
 		assertEquals(expr,"username== 123 and age != 100 or age >= 100 and height<= 200");
 	}
 
+	@Test
+	public void test_to_double() {
+		HashMap vars = new HashMap();
+		vars.put("m1", 100);
+		vars.put("m2", 200);
+		Object result = MVELUtil.eval("toDouble(null) - toDouble(100)",vars);
+		System.out.println(result);
+		
+		result = MVELUtil.eval("toDouble(m1) - toDouble(not_exist_var)",vars);
+		System.out.println(result);
+		
+		result = MVELUtil.eval("toDouble(m1) - toDouble(m2)",vars);
+		System.out.println(result);
+		
+	}
+	
 	@Test
 	public void test2() {
 		MVELUtil.eval("abc == 123",new HashMap());
