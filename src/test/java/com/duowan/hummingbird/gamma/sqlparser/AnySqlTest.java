@@ -12,6 +12,7 @@ public class AnySqlTest {
 
 	@Test
 	public void testUse() throws JSQLParserException {
+		System.out.println(new Timestamp(1468252800000L));
 		System.out.println(System.getProperty("user.home"));
 		System.out.println(new Timestamp(1451921460000l));
 		

@@ -480,7 +480,7 @@ public class SelectSql {
 				sqlCache.put(querySql, result);
 			}
 			return result;
-		} catch (JSQLParserException e) {
+		} catch (Exception e) {
 			throw new RuntimeException("parse error on query:"+querySql,e);
 		}
 	}

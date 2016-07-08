@@ -3,6 +3,7 @@ package com.duowan.hummingbird.util;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.impl.cookie.DateUtils;
 
 import com.github.rapid.common.util.DateConvertUtil;
 
@@ -69,4 +70,7 @@ public class Functions {
 			return falseValue;
 	}
 	
+	public static Date newDate(long date) {
+		return new Date(date);
+	}
 }

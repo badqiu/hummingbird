@@ -103,8 +103,10 @@ public class SqlParser {
 //										System.out.println("func: "+function.getName()  + " params:"+ function.getParameters().getExpressions());
 									selectItem.setFunc(function.getName());
 									List<String> params = new ArrayList();
-									for(Expression paramExpr : function.getParameters().getExpressions()) {
-										params.add(paramExpr.toString());
+									if(function.getParameters() != null) {
+										for(Expression paramExpr : function.getParameters().getExpressions()) {
+											params.add(paramExpr.toString());
+										}
 									}
 									selectItem.setParams(params.toArray(new String[0]));
 								}
