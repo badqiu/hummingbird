@@ -31,6 +31,8 @@ public class Functions {
 	 * @return
 	 */
 	public static Date roundMinute(Date date,int num) {
+		if(date == null) return null;
+		
 		int roundedMinute = date.getMinutes() / num * num;
 		String dateString = DateConvertUtil.format(date, "yyyy-MM-dd HH:") + roundedMinute + ":00";
 		return DateConvertUtil.parse(dateString, "yyyy-MM-dd HH:mm:ss");
