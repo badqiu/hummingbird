@@ -135,15 +135,11 @@ public class SelectSql {
 		public List<Map> exec() {
 			List<Map> rows = from.execute(db,params);
 			if(rows == null) {
-				throw new RuntimeException("not found table by:"+from);
+				throw new RuntimeException("table is null,not found table by:"+from+",avaibles table names:"+db.keySet());
 			}
 			
 			List<Map> joinRows = join(rows,joins,0);
-			
-			Profiler.enter("filterByWhere");
 			List<Map> wheredRows = filterByWhere(joinRows,where);
-			Profiler.release();
-			
 			List<Map> selectRows = groupByAndSelect(wheredRows);
 			List<Map> havingedRows = having(selectRows);
 			List<Map> orderByRows = orderBy(havingedRows);
@@ -161,7 +157,9 @@ public class SelectSql {
 				intoTable = new ArrayList<Map>(rows);
 				db.put(into, intoTable);
 			}else {
-				intoTable.addAll(rows);
+				synchronized (intoTable) {
+					intoTable.addAll(rows);
+				}
 			}
 		}
 		
