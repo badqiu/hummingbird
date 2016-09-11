@@ -54,6 +54,9 @@ public class FromItem {
 	}
 
 	public String toString() {
+		if(StringUtils.isBlank(alias)) {
+			return table;
+		}
 		return table + " as " + alias;
 	}
 	
