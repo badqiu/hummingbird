@@ -14,6 +14,8 @@ public class Max extends BaseAggrFunction implements AggrFunction{
 	public Object exec(List groupBy,List<Map> values,Object[] params){
 		String expr = String.valueOf(params[0]);
 		List<Object> querys = MVELUtil.extractNotNullValues(values, expr) ;
+		if(querys.isEmpty()) return null;
+		
 		Object max = Collections.max(querys,ComparatorUtils.NATURAL_COMPARATOR);
 		return max;
 	}

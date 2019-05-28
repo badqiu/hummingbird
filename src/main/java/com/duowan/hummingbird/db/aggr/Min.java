@@ -15,6 +15,8 @@ public class Min extends BaseAggrFunction implements AggrFunction{
 		String expr = String.valueOf(params[0]);
 		List<Object> querys = MVELUtil.extractNotNullValues(values, expr) ;
 		
+		if(querys.isEmpty()) return null;
+		
 		return Collections.min(querys,ComparatorUtils.NATURAL_COMPARATOR);
 	}
 

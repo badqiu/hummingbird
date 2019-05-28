@@ -1,14 +1,16 @@
 package com.duowan.hummingbird.gamma.sqlparser;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.jsqlparser.JSQLParserException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
@@ -20,9 +22,13 @@ public class AnySqlTest {
 
 	@Test
 	public void testUse() throws JSQLParserException, IOException {
-		System.out.println(new ArrayList().subList(0, 6));
-		System.out.println(Arrays.asList(1,5.20,"badqiu"));
-		System.out.println(System.currentTimeMillis());
+		List<String> line1 = FileUtils.readLines(new File("H:\\tmp\\Mi-data\\1/fact_create.csv"));
+		List<String> line2 = FileUtils.readLines(new File("H:\\tmp\\Mi-data\\2/fact_create.csv"));
+		line2.remove(0);
+		line1.addAll(line2);
+		FileUtils.writeLines(new File("H:\\tmp\\Mi-data\\create.csv"), line1);
+		
+		System.out.println(new Timestamp(1509246868000L));
 		Map param = new HashMap();
 		param.put("day", "2017-10-10");
 		FreemarkerReader reader = new FreemarkerReader(new StringReader("<#if day?replace('-','')?number &gt; 2016 >true,${day?replace('-','')?number}</#if>"),new Configuration(),param);
@@ -44,11 +50,5 @@ public class AnySqlTest {
 //		System.out.println("stmt:"+stmt);
 	}
 
-	private void printABCD(int sum) {
-		double a = sum * 0.2;
-		double b = sum * 0.3;
-		double c = sum * 0.4;
-		double d = sum * 0.1;
-		System.out.println("A:"+a+"\nB:"+b+"\nC:"+c+"\nD:"+d+"\n\n\n");
-	}
+
 }
