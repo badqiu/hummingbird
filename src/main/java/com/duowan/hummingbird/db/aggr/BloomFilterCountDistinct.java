@@ -160,8 +160,13 @@ public class BloomFilterCountDistinct extends BaseCountDistinct{
 			String group = StringUtils.join(key.list,"/");
 			Object aggrResult = resultMap.get(group);
 			if(aggrResult == null) {
+				continue;
+			}
+			/*
+			if(aggrResult == null) {
 				throw new RuntimeException("not found result for group:"+group);
 			}
+			*/
 			result.put(key, aggrResult);
 		}
 		return result;
