@@ -153,20 +153,23 @@ public class BloomFilterCountDistinct extends BaseCountDistinct{
 		return null;
 	}
 	
-	public static Map<GroupByValue, Object> mapping2Result(Map<GroupByValue, List<Map>> map, Map<String, Integer> resultMap) {
+	public static Map<GroupByValue, Object> mapping2Result(Map<GroupByValue, List<Map>> groupByParam, Map<String, Integer> resultMap) {
 		Map<GroupByValue,Object> result = new HashMap<GroupByValue,Object>();
-		for(Map.Entry<GroupByValue, List<Map>> entry : map.entrySet()) {
+		for(Map.Entry<GroupByValue, List<Map>> entry : groupByParam.entrySet()) {
 			GroupByValue key = entry.getKey();
 			String group = StringUtils.join(key.list,"/");
+			group = StringUtils.remove(group, "?");
 			Object aggrResult = resultMap.get(group);
+			/*
 			if(aggrResult == null) {
 				continue;
 			}
-			/*
-			if(aggrResult == null) {
-				throw new RuntimeException("not found result for group:"+group);
-			}
 			*/
+			
+			if(aggrResult == null) {
+				throw new RuntimeException("not found result for group:"+group+" groupByParam:"+groupByParam);
+			}
+			
 			result.put(key, aggrResult);
 		}
 		return result;
