@@ -4,17 +4,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.duowan.hummingbird.util.MVELUtil;
 
 public class Sum extends BaseAggrFunction implements AggrFunction{
-
+	private static Logger logger = LoggerFactory.getLogger(Sum.class);
+	
 	@Override
 	public Object exec(List groupBy,List<Map> values,Object[] params){
 		String expr = String.valueOf(params[0]);
 		List<Object> querys = MVELUtil.extractNotNullValues(values, expr) ;
 		
-		if(querys.isEmpty()) return null;
+		if(querys.isEmpty()) return 0;
 		
 		return sum(querys);
 	}
@@ -45,6 +48,7 @@ public class Sum extends BaseAggrFunction implements AggrFunction{
 			}
 			return num;
 		}catch(Exception e) {
+			logger.error("Sum.toNumber error,v:"+v);
 			return 0;
 		}
 	}
