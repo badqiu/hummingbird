@@ -181,7 +181,7 @@ public class BloomFilterCountDistinct extends BaseCountDistinct{
 
 	private static String getGroupKey(GroupByValue key) {
 		String group = StringUtils.join(key.list,"/");
-		group = StringUtils.remove(group, "?");
+//		group = StringUtils.remove(group, "?");
 		return group;
 	}
 
