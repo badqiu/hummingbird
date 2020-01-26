@@ -109,7 +109,7 @@ public class BloomFilterCountDistinct extends BaseCountDistinct{
 		for(Map.Entry<GroupByValue, List<Map>> entry : groupByParam.entrySet()) {
 			GroupByValue key = entry.getKey();
 			List<Map> values = entry.getValue();
-			String group = StringUtils.join(key.list,"/");
+			String group = getGroupKey(key);
 			BloomFilterRequest request = newBloomFilterRequest(partitionColumn,distinctColumn, values,group);
 			resultList.add(request);
 		}
@@ -157,24 +157,33 @@ public class BloomFilterCountDistinct extends BaseCountDistinct{
 		Map<GroupByValue,Object> result = new HashMap<GroupByValue,Object>();
 		for(Map.Entry<GroupByValue, List<Map>> entry : groupByParam.entrySet()) {
 			GroupByValue key = entry.getKey();
-			String group = StringUtils.join(key.list,"/");
-			group = StringUtils.remove(group, "?");
+			String group = getGroupKey(key);
 			Object aggrResult = resultMap.get(group);
+			
 			/*
 			if(aggrResult == null) {
 				continue;
 			}
 			*/
 			
+			
+			
 			if(aggrResult == null) {
-				throw new RuntimeException("not found result for group:"+group+" groupByParam:"+groupByParam);
+				throw new RuntimeException("not found result for group:"+group+" GroupByValue:"+key);
 			}
+			
+			
 			
 			result.put(key, aggrResult);
 		}
 		return result;
 	}
 
+	private static String getGroupKey(GroupByValue key) {
+		String group = StringUtils.join(key.list,"/");
+		group = StringUtils.remove(group, "?");
+		return group;
+	}
 
 	
 }

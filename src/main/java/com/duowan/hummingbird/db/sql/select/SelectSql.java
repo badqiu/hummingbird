@@ -406,8 +406,10 @@ public class SelectSql {
 		public Object get(int index) {
 			return list.get(index);
 		}
+		
+		@Override
 		public String toString() {
-			return String.valueOf(list);
+			return "GroupByValue [list=" + list + "]";
 		}
 		@Override
 		public int hashCode() {
@@ -430,6 +432,8 @@ public class SelectSql {
 				return false;
 			return true;
 		}
+		
+		
 	}
 	
 	private static class GroupBy {
