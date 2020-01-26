@@ -3,6 +3,7 @@ package com.duowan.hummingbird.db.aggr;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +18,12 @@ public class Sum extends BaseAggrFunction implements AggrFunction{
 		String expr = String.valueOf(params[0]);
 		List<Object> querys = MVELUtil.extractNotNullValues(values, expr) ;
 		
-		if(querys.isEmpty()) return 0;
-		
 		return sum(querys);
 	}
 
 	public static double sum(List<Object> values) {
+		if(CollectionUtils.isEmpty(values)) return 0;
+		
 		double sum = 0;
 		for(Object v : values) {
 			if(v != null) {
